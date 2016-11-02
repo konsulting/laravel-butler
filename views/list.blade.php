@@ -1,4 +1,4 @@
-@unless(empty(\Butler::providers()))
+@unless(Butler::providers()->isEmpty())
     <div class="row">
         <div class="col-sm-4 col-sm-offset-4 text-center">
             <h4>Or, login with</h4>
