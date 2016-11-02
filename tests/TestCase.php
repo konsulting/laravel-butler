@@ -61,8 +61,9 @@ class TestCase extends \Orchestra\Testbench\TestCase
             Route::get('/login', function () { return ''; })->name('login');
             Route::get('/home', function () { return ''; })->name('home');
             Route::get('/profile', function () { return ''; })->name('profile');
-            Butler::routes();
         });
+
+        Butler::routes();
     }
 
     /**
