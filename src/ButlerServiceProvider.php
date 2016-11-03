@@ -28,7 +28,7 @@ class ButlerServiceProvider extends ServiceProvider
         $this->app->singleton('butler', function ($app) {
             return new Butler(
                 $app['config']['butler.providers'],
-                $app['config']['butler.routes']
+                $app['config']['butler.route_map']
             );
         });
 

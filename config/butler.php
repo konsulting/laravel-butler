@@ -33,7 +33,7 @@ return
     /**
      * The application routes for us to use when redirecting the user after actions
      */
-    'routes' => [
+    'route_map' => [
         'login' => 'login',
         'authenticated' => 'home',
         'profile' => 'profile',

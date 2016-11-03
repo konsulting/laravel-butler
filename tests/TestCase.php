@@ -8,7 +8,7 @@ use Butler;
 use Konsulting\Butler\Fake\User;
 use Konsulting\Butler\Fake\Identity;
 
-class TestCase extends \Orchestra\Testbench\TestCase
+abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     /**
      * Set up ServiceProviders
