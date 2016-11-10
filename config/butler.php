@@ -26,6 +26,11 @@ return
     'can_create_users' => false,
 
     /**
+     * Should we ask the user to confirm the identity if it is their first one and they just created the account?
+     */
+    'confirm_identity_for_new_user' => true,
+
+    /**
      * The class of the notification to send when adding a social identity
      */
     'confirm_identity_notification' => \Konsulting\Butler\Notifications\ConfirmSocialIdentity::class,

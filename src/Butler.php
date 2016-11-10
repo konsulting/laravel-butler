@@ -165,4 +165,16 @@ class Butler
     {
         return app('butler_user_provider');
     }
+
+    /**
+     * Check if butler created the user.
+     *
+     * @param $user
+     *
+     * @return mixed
+     */
+    public function createdUser($user)
+    {
+        return $this->userProvider()->createdUser($user);
+    }
 }

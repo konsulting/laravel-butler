@@ -55,6 +55,24 @@ class AuthControllerTest extends TestCase
         );
     }
 
+    public function test_it_creates_a_user_if_allowed_on_callback_but_doesnt_notify_if_not_needed()
+    {
+        config()->set('butler.confirm_identity_for_new_user', false);
+
+        Notification::fake();
+
+        $this->allowUserCreation();
+
+        $this->visitRoute('butler.callback', 'test');
+        $this->seeRouteIs(Butler::routeName('profile'));
+        $this->seeInDatabase('users', ['email' => 'keoghan@klever.co.uk']);
+
+        Notification::assertNotSentTo(
+            User::first(),
+            ConfirmSocialIdentity::class
+        );
+    }
+
     public function test_it_DOESNT_create_a_user_if_not_allowed_on_callback()
     {
         $this->stopUserCreation();

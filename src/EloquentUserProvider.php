@@ -7,6 +7,7 @@ class EloquentUserProvider
 {
     protected $model;
     protected $canCreateUsers = false;
+    protected $createdUsers = [];
 
     /**
      * EloquentUserProvider constructor.
@@ -49,6 +50,7 @@ class EloquentUserProvider
 
     /**
      * Create a new user from the provided Identity.
+     * Record it's creation within the instance.
      *
      * @param \Laravel\Socialite\Contracts\User $oauthId
      *
@@ -60,9 +62,25 @@ class EloquentUserProvider
             return null;
         }
 
-        return call_user_func([$this->model, 'create'], [
+        $user = call_user_func([$this->model, 'create'], [
             'name' => $oauthId->getName(),
             'email' => $oauthId->getEmail(),
         ]);
+
+        $this->createdUsers[] = $user->id;
+
+        return $user;
+    }
+
+    /**
+     * Confirm or deny whether we created a user
+     *
+     * @param $user
+     *
+     * @return bool
+     */
+    public function createdUser($user)
+    {
+        return in_array($user->id, $this->createdUsers);
     }
 }

@@ -95,6 +95,7 @@ user_provider | It finds and creates users for Butler. Only creating if it is al
 user_class | The applications user model, used by the user provider, and the SocialIdentity class to set up the user relation.
 providers | The list of Social Login providers that Butler needs to be aware of. (These are essentially the Socialite Drivers you are using). It is used to populate the Notification to users and the list view.
 can_create_users | Sets whether Butler is allowed to create users when a new Social Identity is received and there is no matching user account.
+confirm_identity_for_new_user | Sets whether to ask the user to confirm the identity if it is their first one and they just created the account.
 confirm_identity_notification | The Notification class to use when telling the user that we had a Social Identification request. Sent when using the AuthController.
 route_map | Defines the mapping of Butler's name for special routes in the application to actual application values. We’ve set some common ones out of the box.
 

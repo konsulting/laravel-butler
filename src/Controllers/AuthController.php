@@ -3,6 +3,7 @@
 namespace Konsulting\Butler\Controllers;
 
 use Butler;
+use Carbon\Carbon;
 use Konsulting\Butler\Exceptions\NoUser;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -64,10 +65,24 @@ class AuthController extends BaseController
 
         try {
             $socialIdentity = Butler::register($provider, $oauthId);
-            $socialIdentity->askUserToConfirm();
+
+            // If the user was just created, and we have opted to allow them to
+            // login without confirming the social identify, we'll log them
+            // in. Otherwise, we'll ask to confirm the social identity.
+
+            if (Butler::createdUser($socialIdentity->user)
+                && config('butler.confirm_identity_for_new_user', true) == false
+            ) {
+                $socialIdentity->confirm();
+                $this->guard()->login($socialIdentity->user);
+                $message = 'Identity Saved';
+            } else {
+                $socialIdentity->askUserToConfirm();
+                $message = 'Identity saved, please check your email to confirm.';
+            }
 
             return redirect()->route($this->loginOrProfile())
-                ->with('status.content', 'Identity saved, please check your email to confirm.')
+                ->with('status.content', $message)
                 ->with('status.type', 'success');
         } catch (NoUser $e) {
             return redirect()->route(Butler::routeName('login'))
