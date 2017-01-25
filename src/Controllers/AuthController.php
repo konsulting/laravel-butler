@@ -3,7 +3,6 @@
 namespace Konsulting\Butler\Controllers;
 
 use Butler;
-use Carbon\Carbon;
 use Konsulting\Butler\Exceptions\NoUser;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -101,7 +100,12 @@ class AuthController extends BaseController
     public function confirm($token)
     {
         try {
-            Butler::confirmIdentityByToken($token);
+            $socialIdentity = Butler::confirmIdentityByToken($token);
+
+            if (config('butler.login_immediately_after_confirm', false)) {
+                $this->guard()->login($socialIdentity->user);
+            }
+
         } catch (UnableToConfirm $e) {
             return redirect()->route(Butler::routeName('login'))
                 ->with('status.content', 'Unable to confirm identity usage.')

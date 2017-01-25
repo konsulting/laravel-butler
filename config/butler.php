@@ -36,6 +36,11 @@ return
     'confirm_identity_notification' => \Konsulting\Butler\Notifications\ConfirmSocialIdentity::class,
 
     /**
+     * Should we log the user in straight after confirmation?
+     */
+    'login_immediately_after_confirm' => false,
+
+    /**
      * The application routes for us to use when redirecting the user after actions
      */
     'route_map' => [

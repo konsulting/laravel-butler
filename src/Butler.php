@@ -153,7 +153,7 @@ class Butler
      */
     public static function confirmIdentityByToken($token)
     {
-        SocialIdentity::confirmByToken($token);
+        return SocialIdentity::confirmByToken($token);
     }
 
     /**

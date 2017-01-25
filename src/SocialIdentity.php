@@ -43,6 +43,10 @@ class SocialIdentity extends Model
             ->where('user_id', $user->id)
             ->first();
 
+        if ($existing && ! $existing->pastConfirmationDeadline()) {
+            return $existing;
+        }
+
         if ($existing) {
             $existing->delete();
         }
@@ -57,6 +61,14 @@ class SocialIdentity extends Model
             'confirm_token' => Str::random(60),
             'confirm_until' => Carbon::now()->addMinutes(30),
         ]);
+    }
+
+    /**
+     * Check if we are byond the confirmation deadline
+     */
+    public function pastConfirmationDeadline()
+    {
+        return $this->confirm_until->lt(Carbon::now());
     }
 
     /**
@@ -75,6 +87,8 @@ class SocialIdentity extends Model
         }
 
         $identity->confirm();
+
+        return $identity;
     }
 
     /**
@@ -82,8 +96,8 @@ class SocialIdentity extends Model
      */
     public function confirm()
     {
-        if ($this->confirm_until < Carbon::now()) {
-            throw new \UnableToConfirm();
+        if ($this->pastConfirmationDeadline()) {
+            throw new UnableToConfirm();
         }
 
         $this->confirmed_at = Carbon::now();

@@ -97,6 +97,7 @@ providers | The list of Social Login providers that Butler needs to be aware of.
 can_create_users | Sets whether Butler is allowed to create users when a new Social Identity is received and there is no matching user account.
 confirm_identity_for_new_user | Sets whether to ask the user to confirm the identity if it is their first one and they just created the account.
 confirm_identity_notification | The Notification class to use when telling the user that we had a Social Identification request. Sent when using the AuthController.
+login_immediately_after_confirm | Should we log someone in straight after confirming via email, default is false.
 route_map | Defines the mapping of Butler's name for special routes in the application to actual application values. We’ve set some common ones out of the box.
 
 ## Security
