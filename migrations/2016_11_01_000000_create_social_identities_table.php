@@ -14,7 +14,7 @@ class CreateSocialIdentitiesTable extends Migration
     {
         Schema::create('social_identities', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('user_id')->unsigned();
+            $table->integer('user_id')->unsigned()->index();
             $table->string('provider');
             $table->string('reference');
             $table->text('access_token');
