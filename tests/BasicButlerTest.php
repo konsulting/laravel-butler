@@ -4,7 +4,9 @@ namespace Konsulting\Butler;
 
 use Butler;
 use Konsulting\Butler\Exceptions\NoUser;
+use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 use Konsulting\Butler\Exceptions\UnknownProvider;
+use Konsulting\Butler\Fake\User;
 
 class BasicButlerTest extends TestCase
 {
@@ -78,5 +80,21 @@ class BasicButlerTest extends TestCase
         Butler::confirmIdentityByToken($socialIdentity->confirm_token);
 
         $this->assertNotNull($socialIdentity->fresh()->confirmed_at);
+    }
+
+    public function test_it_will_not_reregister_an_identity_that_belongs_to_another_user()
+    {
+        $keoghan = $this->makeUser();
+        $identity = $this->makeIdentity();
+        SocialIdentity::createFromOauthIdentity('test', $keoghan, $identity);
+
+        $roger = User::create(['name' => 'Roger', 'email' => 'roger@klever.co.uk']);
+
+        $this->actingAs($roger);
+        $this->expectException(SocialIdentityAlreadyAssociated::class);
+
+        Butler::register('test', $identity);
+
+        $this->dontSeeInDatabase('social_identities', ['user_id' => 2]);
     }
 }

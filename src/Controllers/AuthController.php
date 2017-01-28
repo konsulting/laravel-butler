@@ -4,6 +4,7 @@ namespace Konsulting\Butler\Controllers;
 
 use Butler;
 use Konsulting\Butler\Exceptions\NoUser;
+use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Laravel\Socialite\Two\InvalidStateException;
 use Konsulting\Butler\Exceptions\UnableToConfirm;
@@ -84,6 +85,10 @@ class AuthController extends BaseController
                 ->with('status.content', $message)
                 ->with('status.type', 'success');
         } catch (NoUser $e) {
+            return redirect()->route(Butler::routeName('login'))
+                ->with('status.content', $e->getMessage())
+                ->with('status.type', 'danger');
+        } catch (SocialIdentityAlreadyAssociated $e) {
             return redirect()->route(Butler::routeName('login'))
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');

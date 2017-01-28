@@ -5,6 +5,7 @@ namespace Konsulting\Butler;
 use Konsulting\Butler\Exceptions\NoUser;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Laravel\Socialite\Contracts\User as Identity;
+use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 
 class Butler
 {
@@ -126,14 +127,19 @@ class Butler
      *
      * @return static
      * @throws \Konsulting\Butler\Exceptions\NoUser
+     * @throws \Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated
      */
     public function register($provider, Identity $identity)
     {
         $this->checkProvider($provider);
 
-        $user = $this->guard()->check()
-            ? $this->guard()->user()
-            : $this->userProvider()->retrieveByOauthIdentity($identity);
+        $authenticatedUser = $this->guard()->check() ? $this->guard()->user() : null;
+        $user = $this->userProvider()->retrieveByOauthIdentity($identity);
+
+        // if the authenticated user doesn't match the one for the social identity, fail
+        if ($authenticatedUser && $user && $authenticatedUser->getKey() !== $user->getKey()) {
+            throw new SocialIdentityAlreadyAssociated('This social account is already associated with another account.');
+        }
 
         if (! $user) {
             $user = $this->userProvider()->createFromOauthIdentity($identity);
