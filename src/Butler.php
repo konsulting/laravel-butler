@@ -94,6 +94,11 @@ class Butler
     {
         $this->checkProvider($provider);
 
+        // Don't authenticate if already logged in
+        if ($this->guard()->check()) {
+            return false;
+        }
+
         $socialIdentity = SocialIdentity::retrieveByOauthIdentity($provider, $identity);
 
         if (! $socialIdentity) {
@@ -138,7 +143,7 @@ class Butler
 
         // if the authenticated user doesn't match the one for the social identity, fail
         if ($authenticatedUser && $user && $authenticatedUser->getKey() !== $user->getKey()) {
-            throw new SocialIdentityAlreadyAssociated('This social account is already associated with another account.');
+            throw new SocialIdentityAlreadyAssociated('This social account is already associated with another user.');
         }
 
         if (! $user) {

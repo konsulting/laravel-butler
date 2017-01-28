@@ -97,4 +97,18 @@ class BasicButlerTest extends TestCase
 
         $this->dontSeeInDatabase('social_identities', ['user_id' => 2]);
     }
+
+    public function test_it_will_not_authenticate_a_new_user_if_another_is_logged_in()
+    {
+        $user = $this->makeUser();
+        $identity = $this->makeIdentity();
+        $this->makeConfirmedSocialIdentity('test', $user, $identity);
+
+        $roger = User::create(['name' => 'Roger', 'email' => 'roger@klever.co.uk']);
+
+        $this->actingAs($roger);
+
+        $this->assertFalse(Butler::authenticate('test', $identity));
+        $this->assertEquals(auth()->user()->id, $roger->id);
+    }
 }
