@@ -55,7 +55,7 @@ public function map()
 ```
 
 * Publish configuration and adjust for your site
-`php artisan vendor:publish --provider=Konsulting\Butler\ButlerServiceProvider --tag=config`
+`php artisan vendor:publish --provider=Konsulting\\Butler\\ButlerServiceProvider --tag=config`
 
 Adjust in `config/butler.php`. Add the providers you want to make available for Authentication - these map directly to Socialite drivers. There are examples in the published file.
 
