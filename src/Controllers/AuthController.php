@@ -3,13 +3,14 @@
 namespace Konsulting\Butler\Controllers;
 
 use Butler;
+use GuzzleHttp\Exception\ClientException;
 use Konsulting\Butler\Exceptions\NoUser;
-use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Laravel\Socialite\Two\InvalidStateException;
 use Konsulting\Butler\Exceptions\UnableToConfirm;
 use Illuminate\Routing\Controller as BaseController;
 use Laravel\Socialite\Contracts\Factory as SocialiteManager;
+use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 
 class AuthController extends BaseController
 {
@@ -56,7 +57,17 @@ class AuthController extends BaseController
         try {
             $oauthId = $this->socialite->driver($provider)->user();
         } catch (InvalidStateException $e) {
-            return redirect()->route('butler.redirect', $provider);
+            return redirect()->route(Butler::routeName('login'))
+                ->with('status.content', 'There was a problem logging in with ' . Butler::provider($provider)->name . ', please try again.')
+                ->with('status.type', 'warning');
+        } catch (ClientException $e) {
+            // There was a problem getting the user. Socialite does not distinguish the reason.
+            // The most likely reason is that someone denied the link-up to our site. So
+            // we will return to login with an appropriate message for that scenario.
+
+            return redirect()->route(Butler::routeName('login'))
+                ->with('status.content', 'You have cancelled the login with ' . Butler::provider($provider)->name . '.')
+                ->with('status.type', 'warning');
         }
 
         if (Butler::authenticate($provider, $oauthId)) {

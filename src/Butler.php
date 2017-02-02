@@ -59,6 +59,20 @@ class Butler
     }
 
     /**
+     * Return a single provider's details
+     *
+     * @param $provider
+     *
+     * @return stdClass
+     */
+    public function provider($provider)
+    {
+        $this->checkProvider($provider);
+
+        return $this->providers[$provider];
+    }
+
+    /**
      * Simple function to include the routes where needed.
      */
     public function routes()
