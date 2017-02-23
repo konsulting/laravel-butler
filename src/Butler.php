@@ -110,7 +110,7 @@ class Butler
 
         // Don't authenticate if already logged in
         if ($this->guard()->check()) {
-            return false;
+            return true;
         }
 
         $socialIdentity = SocialIdentity::retrieveByOauthIdentity($provider, $identity);

@@ -68,7 +68,7 @@ class SocialIdentity extends Model
      */
     public function pastConfirmationDeadline()
     {
-        return $this->confirm_until->lt(Carbon::now());
+        return isset($this->conform_until) ? $this->confirm_until->lt(Carbon::now()) : false;
     }
 
     /**
