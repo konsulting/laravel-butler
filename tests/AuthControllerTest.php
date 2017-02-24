@@ -115,6 +115,18 @@ class AuthControllerTest extends TestCase
         $this->assertNotNull($socialIdentity->fresh()->confirmed_at);
     }
 
+    public function test_logging_in_with_the_an_existing_identity_on_your_account_when_already_authenticated_will_redirect_you_to_profile()
+    {
+        $user = $this->makeUser();
+        $identity = $this->makeIdentity();
+        $this->makeConfirmedSocialIdentity('test', $user, $identity);
+
+        $this->actingAs($user);
+        $this->visitRoute('butler.callback', 'test');
+        $this->seeRouteIs(Butler::routeName('profile'));
+        $this->dontSee('Identity saved');
+    }
+
     public function setUp()
     {
         parent::setUp();

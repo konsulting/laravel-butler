@@ -58,9 +58,17 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         Route::group([
             'middleware' => 'web',
         ], function ($router) {
-            Route::get('/login', function () { return ''; })->name('login');
-            Route::get('/home', function () { return ''; })->name('home');
-            Route::get('/profile', function () { return ''; })->name('profile');
+            Route::get('/login', function () {
+                return 'Login ' . session('status.content');
+            })->name('login');
+
+            Route::get('/home', function () {
+                return 'Home ' . session('status.content');
+            })->name('home');
+
+            Route::get('/profile', function () {
+                return 'Profile ' . session('status.content');
+            })->name('profile');
         });
 
         Butler::routes();

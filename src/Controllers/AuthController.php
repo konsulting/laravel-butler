@@ -10,6 +10,7 @@ use Laravel\Socialite\Two\InvalidStateException;
 use Konsulting\Butler\Exceptions\UnableToConfirm;
 use Illuminate\Routing\Controller as BaseController;
 use Laravel\Socialite\Contracts\Factory as SocialiteManager;
+use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
 use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 
 class AuthController extends BaseController
@@ -103,6 +104,8 @@ class AuthController extends BaseController
             return redirect()->route(Butler::routeName('login'))
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');
+        } catch (UserAlreadyHasSocialIdentity $e) {
+            return redirect()->route(Butler::routeName('profile'));
         }
     }
 

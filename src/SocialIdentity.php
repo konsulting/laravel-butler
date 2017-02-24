@@ -145,4 +145,26 @@ class SocialIdentity extends Model
             ->where('confirmed_at', '<=', Carbon::now())
             ->first();
     }
+
+    /**
+     * Locate a SocialIdentity that is confirmed or awaiting
+     * confirmation based on the info in an Oauth Identity.
+     *
+     * @param                                   $provider
+     * @param \Laravel\Socialite\Contracts\User $identity
+     *
+     * @return mixed
+     */
+    public static function retrievePossibleByOauthIdentity($provider, Identity $identity)
+    {
+        return static::where('provider', $provider)
+            ->where('reference', $identity->getId())
+            ->where(function($query) {
+                $now = Carbon::now();
+
+                $query->where('confirmed_at', '<=', $now)
+                    ->orWhere('expires_at', '>=', $now);
+            })
+            ->first();
+    }
 }

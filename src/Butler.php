@@ -5,6 +5,7 @@ namespace Konsulting\Butler;
 use Konsulting\Butler\Exceptions\NoUser;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Laravel\Socialite\Contracts\User as Identity;
+use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
 use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 
 class Butler
@@ -23,7 +24,7 @@ class Butler
      *
      * @param $providers
      *
-     * @return static
+     * @return \Illuminate\Support\Collection
      */
     protected function prepareProviders($providers)
     {
@@ -108,9 +109,8 @@ class Butler
     {
         $this->checkProvider($provider);
 
-        // Don't authenticate if already logged in
         if ($this->guard()->check()) {
-            return true;
+            return false;
         }
 
         $socialIdentity = SocialIdentity::retrieveByOauthIdentity($provider, $identity);
@@ -144,23 +144,15 @@ class Butler
      * @param                                   $provider
      * @param \Laravel\Socialite\Contracts\User $identity
      *
-     * @return static
+     * @return SocialIdentity
      * @throws \Konsulting\Butler\Exceptions\NoUser
      * @throws \Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated
      */
     public function register($provider, Identity $identity)
     {
         $this->checkProvider($provider);
-
-        $authenticatedUser = $this->guard()->check() ? $this->guard()->user() : null;
+        $this->guardExistingSocialIdentities($provider, $identity);
         $user = $this->userProvider()->retrieveByOauthIdentity($identity);
-
-        // if the authenticated user doesn't match the one for the social identity, fail
-        if ($authenticatedUser && $user && $authenticatedUser->getKey() !== $user->getKey()) {
-            throw new SocialIdentityAlreadyAssociated(
-                "This {$this->providers[$provider]->name} account is already associated with another user."
-            );
-        }
 
         if (! $user) {
             $user = $this->userProvider()->createFromOauthIdentity($identity);
@@ -171,6 +163,30 @@ class Butler
         }
 
         return SocialIdentity::createFromOauthIdentity($provider, $user, $identity);
+    }
+
+    protected function guardExistingSocialIdentities($provider, Identity $identity)
+    {
+        if (! $this->guard()->check()) {
+            return;
+        }
+
+        $authenticatedUser = $this->guard()->user();
+        $existingSocialIdentity = SocialIdentity::retrievePossibleByOauthIdentity($provider, $identity);
+
+        if (! $existingSocialIdentity) {
+            return;
+        }
+
+        // if the authenticated user matches the one found with the
+        if ($authenticatedUser->getKey() === $existingSocialIdentity->user->getKey()) {
+            throw new UserAlreadyHasSocialIdentity();
+        }
+
+        // if the authenticated user doesn't match the one that is found to match the identity details, fail
+        throw new SocialIdentityAlreadyAssociated(
+            "This {$this->providers[$provider]->name} account is already associated with another user."
+        );
     }
 
     /**
