@@ -11,9 +11,9 @@ env:
 
 matrix:
   include:
-    - php: 5.6.0
+    - php: 5.6.4
       env: setup=lowest
-    - php: 5.6.0
+    - php: 5.6.4
       env: setup=stable
 
 sudo: false
