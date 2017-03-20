@@ -60,7 +60,7 @@ class Butler
     }
 
     /**
-     * Return a single provider's details
+     * Return a single provider's details.
      *
      * @param $provider
      *
@@ -127,7 +127,7 @@ class Butler
     }
 
     /**
-     * Get the Guard instance
+     * Get the Guard instance.
      *
      * @return mixed
      */
@@ -139,7 +139,7 @@ class Butler
     /**
      * Register an Identity with a user. We'll use the authenticated user,
      * or if we can't find an appropriate user, create one if allowed.
-     * Otherwise, we will fail through a graceful Exception :)
+     * Otherwise, we will fail through a graceful Exception :).
      *
      * @param                                   $provider
      * @param \Laravel\Socialite\Contracts\User $identity

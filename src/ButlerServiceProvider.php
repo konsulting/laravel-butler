@@ -8,17 +8,17 @@ class ButlerServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__.'/../views', 'butler');
+        $this->loadViewsFrom(__DIR__ . '/../views', 'butler');
 
         $this->publishes([
             __DIR__ . '/../config/butler.php' => config_path('butler.php'),
         ], 'config');
 
         $this->publishes([
-            __DIR__.'/../views' => resource_path('views/vendor/butler'),
+            __DIR__ . '/../views' => resource_path('views/vendor/butler'),
         ], 'views');
 
-        $this->loadMigrationsFrom(__DIR__.'/../migrations');
+        $this->loadMigrationsFrom(__DIR__ . '/../migrations');
     }
 
     public function register()

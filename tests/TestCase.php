@@ -3,15 +3,15 @@
 namespace Konsulting\Butler;
 
 use Route;
-use Schema;
 use Butler;
+use Schema;
 use Konsulting\Butler\Fake\User;
 use Konsulting\Butler\Fake\Identity;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     /**
-     * Set up ServiceProviders
+     * Set up ServiceProviders.
      *
      * @param \Illuminate\Foundation\Application $app
      *
@@ -23,7 +23,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     }
 
     /**
-     * Set up Facades
+     * Set up Facades.
      *
      * @param \Illuminate\Foundation\Application $app
      *
