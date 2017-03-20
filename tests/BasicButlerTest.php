@@ -3,10 +3,10 @@
 namespace Konsulting\Butler;
 
 use Butler;
-use Konsulting\Butler\Exceptions\NoUser;
-use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
-use Konsulting\Butler\Exceptions\UnknownProvider;
 use Konsulting\Butler\Fake\User;
+use Konsulting\Butler\Exceptions\NoUser;
+use Konsulting\Butler\Exceptions\UnknownProvider;
+use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 
 class BasicButlerTest extends TestCase
 {

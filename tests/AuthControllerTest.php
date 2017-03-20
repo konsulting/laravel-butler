@@ -2,7 +2,6 @@
 
 namespace Konsulting\Butler;
 
-use Route;
 use Butler;
 use Notification;
 use Konsulting\Butler\Fake\User;

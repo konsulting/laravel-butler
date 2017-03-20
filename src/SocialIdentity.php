@@ -64,7 +64,7 @@ class SocialIdentity extends Model
     }
 
     /**
-     * Check if we are byond the confirmation deadline
+     * Check if we are byond the confirmation deadline.
      */
     public function pastConfirmationDeadline()
     {
@@ -159,7 +159,7 @@ class SocialIdentity extends Model
     {
         return static::where('provider', $provider)
             ->where('reference', $identity->getId())
-            ->where(function($query) {
+            ->where(function ($query) {
                 $now = Carbon::now();
 
                 $query->where('confirmed_at', '<=', $now)
