@@ -7,8 +7,11 @@ use Schema;
 use Butler;
 use Konsulting\Butler\Fake\User;
 use Konsulting\Butler\Fake\Identity;
+use Konsulting\Butler\Fake\Socialite;
+use Orchestra\Database\ConsoleServiceProvider;
+use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 
-abstract class TestCase extends \Orchestra\Testbench\TestCase
+abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 {
     /**
      * Set up ServiceProviders
@@ -19,7 +22,9 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
      */
     protected function getPackageProviders($app)
     {
-        return [ButlerServiceProvider::class];
+        $over53 = substr(app()->version(), 0, 3) > 5.3 ? [ConsoleServiceProvider::class] : [];
+
+        return array_merge([ButlerServiceProvider::class], $over53);
     }
 
     /**
@@ -54,6 +59,10 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         $app['config']->set('butler.user_class', User::class);
 
         $app['config']->set('auth.providers.users.model', User::class);
+
+        $app->singleton(SocialiteFactory::class, function () {
+            return new Socialite('test');
+        });
 
         Route::group([
             'middleware' => 'web',
