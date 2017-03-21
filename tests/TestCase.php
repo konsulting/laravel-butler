@@ -3,8 +3,8 @@
 namespace Konsulting\Butler;
 
 use Route;
-use Schema;
 use Butler;
+use Schema;
 use Konsulting\Butler\Fake\User;
 use Konsulting\Butler\Fake\Identity;
 use Konsulting\Butler\Fake\Socialite;
@@ -14,7 +14,7 @@ use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 {
     /**
-     * Set up ServiceProviders
+     * Set up ServiceProviders.
      *
      * @param \Illuminate\Foundation\Application $app
      *
@@ -28,7 +28,7 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
     }
 
     /**
-     * Set up Facades
+     * Set up Facades.
      *
      * @param \Illuminate\Foundation\Application $app
      *
