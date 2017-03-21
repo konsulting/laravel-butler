@@ -3,11 +3,11 @@
 namespace Konsulting\Butler\Controllers;
 
 use Butler;
-use GuzzleHttp\Exception\ClientException;
 use Konsulting\Butler\Exceptions\NoUser;
-use Konsulting\Butler\Exceptions\UnknownProvider;
+use GuzzleHttp\Exception\ClientException;
 use Laravel\Socialite\Two\InvalidStateException;
 use Konsulting\Butler\Exceptions\UnableToConfirm;
+use Konsulting\Butler\Exceptions\UnknownProvider;
 use Illuminate\Routing\Controller as BaseController;
 use Laravel\Socialite\Contracts\Factory as SocialiteManager;
 use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
@@ -43,6 +43,7 @@ class AuthController extends BaseController
                 ->with('status.content', 'Unknown Provider.')
                 ->with('status.type', 'warning');
         }
+
         return $this->socialite->driver($provider)->redirect();
     }
 
@@ -110,7 +111,7 @@ class AuthController extends BaseController
     }
 
     /**
-     * Confirm a Social Identity by matching the unique code
+     * Confirm a Social Identity by matching the unique code.
      *
      * @param $token
      *
@@ -124,7 +125,6 @@ class AuthController extends BaseController
             if (config('butler.login_immediately_after_confirm', false)) {
                 $this->guard()->login($socialIdentity->user);
             }
-
         } catch (UnableToConfirm $e) {
             return redirect()->route(Butler::routeName('login'))
                 ->with('status.content', 'Unable to confirm identity usage.')

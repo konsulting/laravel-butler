@@ -1,4 +1,5 @@
 <?php
+
 namespace Konsulting\Butler;
 
 use Laravel\Socialite\Contracts\User as Identity;
@@ -28,7 +29,7 @@ class EloquentUserProvider
      */
     public function canCreateUsers($flag = true)
     {
-        $this->canCreateUsers = (boolean) $flag;
+        $this->canCreateUsers = (bool) $flag;
 
         return $this;
     }
@@ -73,7 +74,7 @@ class EloquentUserProvider
     }
 
     /**
-     * Confirm or deny whether we created a user
+     * Confirm or deny whether we created a user.
      *
      * @param $user
      *

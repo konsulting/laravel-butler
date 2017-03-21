@@ -5,4 +5,3 @@ Route::group(['middleware' => ['web'], 'namespace' => '\\Konsulting\\Butler\\Con
     Route::get('/auth/provider/{provider}', 'AuthController@redirect')->name('butler.redirect');
     Route::get('/auth/provider/{provider}/callback', 'AuthController@callback')->name('butler.callback');
 });
-
