@@ -2,7 +2,7 @@
 
 *Butler manages multiple [Socialite](https://github.com/laravel/socialite) authentication for your [Laravel](https://laravel.com) app.*
 
-In a few simple steps you can allow users to log in to your site using multiple providers. 
+In a few simple steps you can allow users to log in to your site using multiple providers.
 
 Butler is built to work alongside standard Laravel authentication, and uses Socialite to connect to authentication providers.
 
@@ -16,7 +16,9 @@ Butler is built to work alongside standard Laravel authentication, and uses Soci
 
 * Install Butler using composer: `composer require konsulting/laravel-butler`
 
-* Add Butler's Service Provider to `config/app.php`
+* If you are using Laravel 5.5, Butler will auto-register the service provider and
+the Facade. However, if you have chosen not to auto-register, or are using an earlier version,
+add Butler's Service Provider to `config/app.php`
 
 ```php
 'providers' => [
@@ -24,7 +26,7 @@ Butler is built to work alongside standard Laravel authentication, and uses Soci
 
     Konsulting\Butler\ButlerServiceProvider::class,
 ],
-	
+
 ```
 
 * Add Butler's Facade to `config/app.php`
@@ -61,7 +63,7 @@ Adjust in `config/butler.php`. Add the providers you want to make available for 
 
 ```php
     // Other Settings
-  
+
     'providers' => [
         'google' => [
             'name' => 'Google',
@@ -77,7 +79,7 @@ See configuration options for more information.
 
 * _Optionally_ add list of Oauth buttons to your login page, and status feedback.
 
-	Add the following includes to your blade template for the login page. 
+	Add the following includes to your blade template for the login page.
 
 ```
 @include('butler::status')
@@ -87,7 +89,7 @@ See configuration options for more information.
 
 ## Configuration Options
 
-There is a small set of configuration options. 
+There is a small set of configuration options.
 
 Option | What it’s for
 -------|--------------
@@ -108,7 +110,7 @@ If you find any security issues, or have any concerns, please email [keoghan@kle
 
 ## Contributing
 
-Contributions are welcome and will be fully credited. We will accept contributions by Pull Request. 
+Contributions are welcome and will be fully credited. We will accept contributions by Pull Request.
 
 Please:
 
@@ -117,6 +119,6 @@ Please:
 * Document changes in behaviour, including readme.md.
 
 ## Testing
-We use [PHPUnit](https://phpunit.de) and the excellent [orchestral/testbench](https://github.com/orchestral/testbench) 
+We use [PHPUnit](https://phpunit.de) and the excellent [orchestral/testbench](https://github.com/orchestral/testbench)
 
 Run tests using PHPUnit: `vendor/bin/phpunit`
