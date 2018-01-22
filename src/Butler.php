@@ -7,6 +7,7 @@ use Konsulting\Butler\Exceptions\UnknownProvider;
 use Laravel\Socialite\Contracts\User as Identity;
 use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
 use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
+use stdClass;
 
 class Butler
 {
