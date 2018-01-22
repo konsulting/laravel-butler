@@ -3,6 +3,7 @@
 namespace Konsulting\Butler\Controllers;
 
 use Butler;
+use Illuminate\Http\RedirectResponse;
 use Konsulting\Butler\Exceptions\NoUser;
 use GuzzleHttp\Exception\ClientException;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -32,7 +33,7 @@ class AuthController extends BaseController
      *
      * @param $provider
      *
-     * @return Response
+     * @return RedirectResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function redirect($provider)
     {
@@ -52,7 +53,7 @@ class AuthController extends BaseController
      *
      * @param $provider
      *
-     * @return Response
+     * @return RedirectResponse
      */
     public function callback($provider)
     {
