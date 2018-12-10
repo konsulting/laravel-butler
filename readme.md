@@ -8,9 +8,9 @@ Butler is built to work alongside standard Laravel authentication, and uses Soci
 
 ## Requirements
 
-* Install [Socialite](https://github.com/laravel/socialite) - follow the documentation on the site.
+* Install [Socialite](https://github.com/laravel/socialite) - follow the [documentation](https://laravel.com/docs/socialite) on the Laravel site.
 
-* Setup your Socialite providers (you may need to install extra [Socialite Providers](https://socialiteproviders.github.io/))
+* Set up your Socialite providers (you may need to install extra [Socialite Providers](https://socialiteproviders.github.io/)).
 
 ## Installation
 
