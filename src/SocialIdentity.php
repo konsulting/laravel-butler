@@ -3,8 +3,8 @@
 namespace Konsulting\Butler;
 
 use Carbon\Carbon;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Konsulting\Butler\Exceptions\UnableToConfirm;
 use Laravel\Socialite\Contracts\User as Identity;
 
@@ -52,11 +52,11 @@ class SocialIdentity extends Model
         }
 
         return static::create([
-            'provider' => $provider,
-            'user_id' => $user->id,
-            'reference' => $identity->getId(),
-            'access_token' => $identity->token,
-            'expires_at' => Carbon::now()->addSeconds($identity->expiresIn),
+            'provider'      => $provider,
+            'user_id'       => $user->id,
+            'reference'     => $identity->getId(),
+            'access_token'  => $identity->token,
+            'expires_at'    => Carbon::now()->addSeconds($identity->expiresIn),
             'refresh_token' => $identity->refreshToken,
             'confirm_token' => Str::random(60),
             'confirm_until' => Carbon::now()->addMinutes(30),
@@ -64,18 +64,22 @@ class SocialIdentity extends Model
     }
 
     /**
-     * Check if we are byond the confirmation deadline.
+     * Check if we are beyond the confirmation deadline. If no deadline has been set, treat it as being past the
+     * deadline.
+     *
+     * @return bool
      */
     public function pastConfirmationDeadline()
     {
-        return isset($this->conform_until) ? $this->confirm_until->lt(Carbon::now()) : false;
+        return (! $this->confirm_until instanceof Carbon) ?: $this->confirm_until->lt(Carbon::now());
     }
 
     /**
-     * Confirm a SocialIdentity after locating it by it's token.
+     * Confirm a SocialIdentity after locating it by its token.
      *
      * @param $token
      *
+     * @return static
      * @throws \Konsulting\Butler\Exceptions\UnableToConfirm
      */
     public static function confirmByToken($token)
@@ -124,8 +128,8 @@ class SocialIdentity extends Model
     public function updateFromOauthIdentity(Identity $identity)
     {
         $this->update([
-            'access_token' => $identity->token,
-            'expires_at' => Carbon::now()->addSeconds($identity->expiresIn),
+            'access_token'  => $identity->token,
+            'expires_at'    => Carbon::now()->addSeconds($identity->expiresIn),
             'refresh_token' => $identity->refreshToken,
         ]);
     }
@@ -136,7 +140,7 @@ class SocialIdentity extends Model
      * @param                                   $provider
      * @param \Laravel\Socialite\Contracts\User $identity
      *
-     * @return mixed
+     * @return static|null
      */
     public static function retrieveByOauthIdentity($provider, Identity $identity)
     {
@@ -153,7 +157,7 @@ class SocialIdentity extends Model
      * @param                                   $provider
      * @param \Laravel\Socialite\Contracts\User $identity
      *
-     * @return mixed
+     * @return static|null
      */
     public static function retrievePossibleByOauthIdentity($provider, Identity $identity)
     {

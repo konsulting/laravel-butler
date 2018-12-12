@@ -2,17 +2,25 @@
 
 namespace Konsulting\Butler;
 
-use Route;
 use Butler;
-use Schema;
-use Konsulting\Butler\Fake\User;
+use Illuminate\Support\Carbon;
 use Konsulting\Butler\Fake\Identity;
 use Konsulting\Butler\Fake\Socialite;
-use Orchestra\Database\ConsoleServiceProvider;
+use Konsulting\Butler\Fake\User;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
+use Orchestra\Database\ConsoleServiceProvider;
+use Route;
+use Schema;
 
 abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 {
+    /**
+     * The time that Carbon::now() has been set to for testing.
+     *
+     * @var \Carbon\Carbon
+     */
+    protected $carbonNow;
+
     /**
      * Set up ServiceProviders.
      *
@@ -42,11 +50,14 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
     /**
      * Define environment setup.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param  \Illuminate\Foundation\Application $app
      * @return void
      */
     protected function getEnvironmentSetUp($app)
     {
+        Carbon::setTestNow('2018-01-01 10:30:40');
+        $this->carbonNow = Carbon::now();
+
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
@@ -96,6 +107,8 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
             '--database' => 'testbench',
             '--realpath' => realpath(__DIR__ . '/../migrations'),
         ]);
+
+        $this->withFactories(__DIR__ . '/factories');
     }
 
     public function createUsersTable()
