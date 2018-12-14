@@ -2,9 +2,9 @@
 
 namespace Konsulting\Butler;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 abstract class DatabaseTestCase extends TestCase
 {
-    use RefreshDatabase;
+    use DatabaseTransactions;
 }

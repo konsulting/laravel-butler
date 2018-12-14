@@ -8,7 +8,7 @@ use Konsulting\Butler\Fake\User;
 use Konsulting\Butler\Fake\Socialite;
 use Konsulting\Butler\Notifications\ConfirmSocialIdentity;
 
-class AuthControllerTest extends TestCase
+class AuthControllerTest extends DatabaseTestCase
 {
     public function test_it_redirects_to_a_provider()
     {
