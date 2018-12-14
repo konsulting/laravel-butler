@@ -3,7 +3,7 @@
 namespace Konsulting\Butler;
 
 use Butler;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Konsulting\Butler\Fake\Identity;
 use Konsulting\Butler\Fake\Socialite;
 use Konsulting\Butler\Fake\User;
