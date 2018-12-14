@@ -66,6 +66,8 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
             'prefix'   => '',
         ]);
 
+        $app['config']->set('mail.driver', 'log');
+
         $app['config']->set('butler.providers', ['test' => ['name' => 'Test']]);
         $app['config']->set('butler.user_class', User::class);
 
