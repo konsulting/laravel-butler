@@ -2,7 +2,9 @@
 
 namespace Konsulting\Butler;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Socialite\SocialiteManager;
 
 class ButlerServiceProvider extends ServiceProvider
 {
@@ -25,8 +27,9 @@ class ButlerServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/butler.php', 'butler');
 
-        $this->app->singleton('butler', function ($app) {
+        $this->app->singleton('butler', function (Application $app) {
             return new Butler(
+                new SocialiteManager($app),
                 $app['config']['butler.providers'],
                 $app['config']['butler.route_map']
             );

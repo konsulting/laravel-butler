@@ -21,7 +21,7 @@ return
     ],
 
     /*
-     * Can Butler create users if social login is requested for non-exiting user?
+     * Can Butler create users if social login is requested for non-existing user?
      */
     'can_create_users' => false,
 
