@@ -10,6 +10,13 @@ use Konsulting\Butler\Notifications\ConfirmSocialIdentity;
 
 class AuthControllerTest extends DatabaseTestCase
 {
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->app->bind('\Laravel\Socialite\Contracts\Factory', Socialite::class);
+    }
+
     public function test_it_redirects_to_a_provider()
     {
         $this->visitRoute('butler.redirect', 'test');
@@ -124,13 +131,6 @@ class AuthControllerTest extends DatabaseTestCase
         $this->visitRoute('butler.callback', 'test');
         $this->seeRouteIs(Butler::routeName('profile'));
         $this->dontSee('Identity saved');
-    }
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->app->singleton('\Laravel\Socialite\Contracts\Factory', Socialite::class);
     }
 
     public function makeUser2()

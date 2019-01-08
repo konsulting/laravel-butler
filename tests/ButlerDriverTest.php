@@ -4,6 +4,7 @@ namespace Konsulting\Butler;
 
 use Illuminate\Http\RedirectResponse;
 use Laravel\Socialite\Contracts\Provider;
+use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\SocialiteManager;
 use Mockery;
 use Mockery\Mock;
@@ -33,11 +34,33 @@ class ButlerDriverTest extends DatabaseTestCase
     /** @test */
     public function it_performs_a_redirect_on_the_socialite_driver()
     {
+        $redirect = Mockery::mock(RedirectResponse::class);
+        $this->socialiteShouldReturnDriver();
+        $this->socialiteProvider->shouldReceive('redirect')->withNoArgs()
+            ->andReturn($redirect)->once();
+
+        $this->assertSame($redirect, $this->butler->driver('my-service')->redirect());
+    }
+
+    /** @test */
+    public function it_gets_the_user()
+    {
+        $user = Mockery::mock(SocialiteUser::class);
+        $this->socialiteShouldReturnDriver();
+        $this->socialiteProvider->shouldReceive('user')->withNoArgs()
+            ->andReturn($user)->once();
+
+        $this->assertSame($user, $this->butler->driver('my-service')->user());
+    }
+
+    /**
+     * Set the expectation and return value on the Socialite mock.
+     *
+     * @return void
+     */
+    protected function socialiteShouldReturnDriver()
+    {
         $this->socialite->shouldReceive('driver')->with('my-service')
             ->andReturn($this->socialiteProvider)->once();
-        $this->socialiteProvider->shouldReceive('redirect')->withNoArgs()
-            ->andReturn(new RedirectResponse('/'))->once();
-
-        $this->assertInstanceOf(RedirectResponse::class, $this->butler->driver('my-service')->redirect());
     }
 }
