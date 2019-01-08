@@ -27,13 +27,15 @@ class ButlerServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/butler.php', 'butler');
 
-        $this->app->singleton('butler', function (Application $app) {
+        $this->app->bind(Butler::class, function (Application $app) {
             return new Butler(
                 new SocialiteManager($app),
                 $app['config']['butler.providers'],
                 $app['config']['butler.route_map']
             );
         });
+
+        $this->app->alias(Butler::class, 'butler');
 
         $this->app->singleton('butler_user_provider', function ($app) {
             $class = $app['config']['butler.user_provider'];

@@ -2,8 +2,8 @@
 
 namespace Konsulting\Butler\Controllers;
 
-use Butler;
 use Illuminate\Http\RedirectResponse;
+use Konsulting\Butler\Butler;
 use Konsulting\Butler\Exceptions\NoUser;
 use GuzzleHttp\Exception\ClientException;
 use Laravel\Socialite\Two\InvalidStateException;
@@ -38,9 +38,9 @@ class AuthController extends BaseController
     public function redirect($provider)
     {
         try {
-            Butler::checkProvider($provider);
+            \Butler::checkProvider($provider);
         } catch (UnknownProvider $e) {
-            return redirect()->route(Butler::routeName('login'))
+            return redirect()->route(\Butler::routeName('login'))
                 ->with('status.content', 'Unknown Provider.')
                 ->with('status.type', 'warning');
         }
@@ -51,40 +51,43 @@ class AuthController extends BaseController
     /**
      * Obtain the user information from the provider, store details, and log in if appropriate.
      *
-     * @param $provider
+     * @param Butler $butler
+     * @param        $provider
      *
      * @return RedirectResponse
+     * @throws UnableToConfirm
+     * @throws UnknownProvider
      */
-    public function callback($provider)
+    public function callback(Butler $butler, $provider)
     {
         try {
             $oauthId = $this->socialite->driver($provider)->user();
         } catch (InvalidStateException $e) {
-            return redirect()->route(Butler::routeName('login'))
-                ->with('status.content', 'There was a problem logging in with ' . Butler::provider($provider)->name . ', please try again.')
+            return redirect()->route($butler->routeName('login'))
+                ->with('status.content', 'There was a problem logging in with ' . $butler->provider($provider)->name . ', please try again.')
                 ->with('status.type', 'warning');
         } catch (ClientException $e) {
             // There was a problem getting the user. Socialite does not distinguish the reason.
             // The most likely reason is that someone denied the link-up to our site. So
             // we will return to login with an appropriate message for that scenario.
 
-            return redirect()->route(Butler::routeName('login'))
-                ->with('status.content', 'You have cancelled the login with ' . Butler::provider($provider)->name . '.')
+            return redirect()->route($butler->routeName('login'))
+                ->with('status.content', 'You have cancelled the login with ' . $butler->provider($provider)->name . '.')
                 ->with('status.type', 'warning');
         }
 
-        if (Butler::authenticate($provider, $oauthId)) {
-            return redirect()->route(Butler::routeName('authenticated'));
+        if ($butler->authenticate($provider, $oauthId)) {
+            return redirect()->route($butler->routeName('authenticated'));
         }
 
         try {
-            $socialIdentity = Butler::register($provider, $oauthId);
+            $socialIdentity = $butler->register($provider, $oauthId);
 
             // If the user was just created, and we have opted to allow them to
             // login without confirming the social identify, we'll log them
             // in. Otherwise, we'll ask to confirm the social identity.
 
-            if (Butler::createdUser($socialIdentity->user)
+            if ($butler->createdUser($socialIdentity->user)
                 && config('butler.confirm_identity_for_new_user', true) == false
             ) {
                 $socialIdentity->confirm();
@@ -99,15 +102,15 @@ class AuthController extends BaseController
                 ->with('status.content', $message)
                 ->with('status.type', 'success');
         } catch (NoUser $e) {
-            return redirect()->route(Butler::routeName('login'))
+            return redirect()->route($butler->routeName('login'))
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');
         } catch (SocialIdentityAlreadyAssociated $e) {
-            return redirect()->route(Butler::routeName('login'))
+            return redirect()->route($butler->routeName('login'))
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');
         } catch (UserAlreadyHasSocialIdentity $e) {
-            return redirect()->route(Butler::routeName('profile'));
+            return redirect()->route($butler->routeName('profile'));
         }
     }
 
@@ -139,7 +142,7 @@ class AuthController extends BaseController
 
     protected function loginOrProfile()
     {
-        return Butler::routeName($this->guard()->check() ? 'profile' : 'login');
+        return \Butler::routeName($this->guard()->check() ? 'profile' : 'login');
     }
 
     protected function guard()
