@@ -4,7 +4,7 @@ namespace Konsulting\Butler;
 
 use Illuminate\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
-use Laravel\Socialite\SocialiteManager;
+use Laravel\Socialite\Contracts\Factory;
 
 class ButlerServiceProvider extends ServiceProvider
 {
@@ -29,7 +29,7 @@ class ButlerServiceProvider extends ServiceProvider
 
         $this->app->bind(Butler::class, function (Application $app) {
             return new Butler(
-                new SocialiteManager($app),
+                $app->make(Factory::class),
                 $app['config']['butler.providers'],
                 $app['config']['butler.route_map']
             );
