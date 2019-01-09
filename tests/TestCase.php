@@ -14,15 +14,21 @@ use Schema;
 
 abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 {
-    /**
-     * The time that Carbon::now() has been set to for testing.
-     *
-     * @var \Carbon\Carbon
-     */
-    protected $carbonNow;
+    const CARBON_NOW = '2018-01-01 10:30:40';
 
     /**
-     * Set up ServiceProviders.
+     * Get the test Carbon::now() instance. For use in data providers where Carbon::setTestNow() has not been called
+     * (because data providers are resolved before PHPUnit's setUp() method).
+     *
+     * @return Carbon
+     */
+    protected static function carbonNow()
+    {
+        return Carbon::parse(static::CARBON_NOW);
+    }
+
+    /**
+     * Set up service providers.
      *
      * @param \Illuminate\Foundation\Application $app
      *
@@ -55,8 +61,7 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
      */
     protected function getEnvironmentSetUp($app)
     {
-        Carbon::setTestNow('2018-01-01 10:30:40');
-        $this->carbonNow = Carbon::now();
+        Carbon::setTestNow(static::carbonNow());
 
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
