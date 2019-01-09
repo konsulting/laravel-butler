@@ -130,7 +130,7 @@ class AuthController extends BaseController
                 $this->guard()->login($socialIdentity->user);
             }
         } catch (UnableToConfirm $e) {
-            return redirect()->route(Butler::routeName('login'))
+            return redirect()->route(\Butler::routeName('login'))
                 ->with('status.content', 'Unable to confirm identity usage.')
                 ->with('status.type', 'danger');
         }

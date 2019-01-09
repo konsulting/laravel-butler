@@ -2,7 +2,7 @@
 
 namespace Konsulting\Butler\Exceptions;
 
-class NoUser extends ButlerException
+class ButlerException extends \Exception
 {
-    //
+
 }
