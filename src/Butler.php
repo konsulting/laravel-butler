@@ -101,6 +101,13 @@ class Butler
         return $this->providers[$provider];
     }
 
+    /**
+     * Get the Butler driver for the given Socialite provider. This wraps the underlying Socialite driver and provides
+     * some extra functionality.
+     *
+     * @param string $providerName
+     * @return ButlerDriver
+     */
     public function driver($providerName)
     {
         return new ButlerDriver($this->socialite->driver($providerName));
