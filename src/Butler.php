@@ -6,6 +6,7 @@ use Konsulting\Butler\Exceptions\NoUser;
 use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
+use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 use Laravel\Socialite\Contracts\User as Identity;
 use Laravel\Socialite\SocialiteManager;
 use stdClass;
@@ -36,11 +37,11 @@ class Butler
     /**
      * Butler constructor.
      *
-     * @param SocialiteManager $socialite
+     * @param SocialiteFactory $socialite
      * @param array[]          $providers
      * @param array            $routeNames
      */
-    public function __construct(SocialiteManager $socialite, $providers, $routeNames)
+    public function __construct(SocialiteFactory $socialite, $providers, $routeNames)
     {
         $this->providers = $this->prepareProviders($providers);
         $this->routeNames = collect($routeNames);
