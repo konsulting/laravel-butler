@@ -115,8 +115,8 @@ class ButlerJobTest extends DatabaseTestCase
         $exception = new TestException;
 
         $task = Mockery::mock();
-        $task->shouldReceive('run')->andThrow($exception);
-        $task->shouldReceive('handleException')->with($exception);
+        $task->shouldReceive('run')->andThrow($exception)->once();
+        $task->shouldReceive('handleException')->with($exception)->once();
 
         MyButlerJob::dispatch($this->user, $task);
     }
@@ -148,7 +148,11 @@ class MyButlerJob extends ButlerJob
 
     protected function handleException(\Exception $e)
     {
-        $this->task->handleException($e);
+        if ($e instanceof TestException) {
+            return $this->task->handleException($e);
+        }
+
+        return parent::handleException($e);
     }
 }
 
