@@ -8,13 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Konsulting\Butler\Exceptions\SocialIdentityNotFound;
 use Konsulting\Butler\SocialIdentity;
 
 abstract class ButlerJob
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $butlerTryLimit = 2;
+    /**
+     * The number of times the job should be retried, refreshing the token after each unsuccessful attempt. Already
+     * expired tokens will be refreshed before the job is started, so do not count against this try limit.
+     *
+     * @var int
+     */
+    protected $butlerTryLimit = 1;
 
     /**
      * @var Authenticatable
@@ -145,7 +152,8 @@ abstract class ButlerJob
             ->where('provider', $this->getSocialProviderName())->first();
 
         if (! $socialIdentity) {
-            throw new \Exception('Identity not found');
+            throw new SocialIdentityNotFound('User ' . $this->user->getAuthIdentifier() .
+                ' does not have a social identity for ' . $this->getSocialProviderName());
         }
 
         return $socialIdentity;

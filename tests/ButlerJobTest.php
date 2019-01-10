@@ -5,6 +5,8 @@ namespace Konsulting\Butler;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Konsulting\Butler\Contracts\RefreshableProvider;
+use Konsulting\Butler\Exceptions\ButlerException;
+use Konsulting\Butler\Exceptions\SocialIdentityNotFound;
 use Konsulting\Butler\Jobs\ButlerJob;
 use Laravel\Socialite\Contracts\Factory;
 use Laravel\Socialite\Contracts\Provider as SocialiteProvider;
@@ -17,7 +19,7 @@ class ButlerJobTest extends DatabaseTestCase
     /** @var Authenticatable|Mock */
     protected $user;
 
-    /** @var SocialIdentity|Mock */
+    /** @var SocialIdentity */
     protected $socialIdentity;
 
     /** @var SocialiteProvider|Mock */
@@ -97,6 +99,27 @@ class ButlerJobTest extends DatabaseTestCase
 
         MyButlerJob::dispatch($this->user, $task);
     }
+
+    /** @test */
+    public function it_throws_an_exception_if_the_social_identity_is_not_found()
+    {
+        $this->socialIdentity->delete();
+
+        $this->expectException(SocialIdentityNotFound::class);
+        MyButlerJob::dispatch($this->user, Mockery::mock());
+    }
+
+    /** @test */
+    public function it_handles_thrown_exceptions()
+    {
+        $exception = new TestException;
+
+        $task = Mockery::mock();
+        $task->shouldReceive('run')->andThrow($exception);
+        $task->shouldReceive('handleException')->with($exception);
+
+        MyButlerJob::dispatch($this->user, $task);
+    }
 }
 
 
@@ -122,4 +145,14 @@ class MyButlerJob extends ButlerJob
         // Pass the token to our 'task' so we can assert against it
         return $this->task->run($token);
     }
+
+    protected function handleException(\Exception $e)
+    {
+        $this->task->handleException($e);
+    }
+}
+
+class TestException extends ButlerException
+{
+
 }
