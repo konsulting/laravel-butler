@@ -173,15 +173,17 @@ class SocialIdentity extends Model
     }
 
     /**
-     * Check if the access token's expiry date has passed. Since the expires_in parameter is not required by OAuth, if
-     * the expiry date is null we'll assume that the token is still valid.
+     * Check if the access token's expiry date has passed. If the expiry date is null we'll assume that the token has
+     * expired.
      *
      * @return bool
      */
     public function accessTokenIsExpired()
     {
-        return $this->expires_at instanceof Carbon
-            ? $this->expires_at->isPast()
-            : false;
+        if ($this->expires_at instanceof Carbon) {
+            return $this->expires_at->isPast();
+        }
+
+        return true;
     }
 }

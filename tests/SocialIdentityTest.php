@@ -35,7 +35,7 @@ class SocialIdentityTest extends DatabaseTestCase
         return [
             [static::carbonNow()->subMonth(), true],
             [static::carbonNow()->addMonth(), false],
-            [null, false],
+            [null, true],
         ];
     }
 }
