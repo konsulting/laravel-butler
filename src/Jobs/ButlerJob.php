@@ -61,6 +61,17 @@ abstract class ButlerJob
     }
 
     /**
+     * Invalidate the access token. Useful if the response indicates that the access token is invalid or expired, and
+     * should be refreshed upon retry.
+     *
+     * @return bool
+     */
+    protected function invalidateAccessToken()
+    {
+        return $this->getSocialIdentityFromUser()->invalidateAccessToken();
+    }
+
+    /**
      * Handle the job.
      *
      * @return bool
@@ -72,7 +83,7 @@ abstract class ButlerJob
             $socialIdentity = $this->getSocialIdentityFromUser();
             $token = $this->getToken($socialIdentity);
 
-            return $this->actionLoop($token, $socialIdentity);
+            return $this->doAction($token);
         } catch (\Exception $e) {
             return $this->handleException($e);
         }
@@ -95,17 +106,6 @@ abstract class ButlerJob
     }
 
     /**
-     * Refresh the social identity and get the access token.
-     *
-     * @param SocialIdentity $socialIdentity
-     * @return string
-     */
-    private function getRefreshedToken(SocialIdentity $socialIdentity)
-    {
-        return $this->getToken($socialIdentity, true);
-    }
-
-    /**
      * Refresh the tokens on the social identity model.
      *
      * @param SocialIdentity $socialIdentity
@@ -114,30 +114,6 @@ abstract class ButlerJob
     private function refreshSocialIdentityTokens($socialIdentity)
     {
         return \Butler::driver($this->getSocialProviderName())->refresh($socialIdentity);
-    }
-
-    /**
-     * Loop through the action for the specified number of tries, or until successful.
-     *
-     * @param string         $token
-     * @param SocialIdentity $socialIdentity
-     * @return bool
-     */
-    private function actionLoop($token, $socialIdentity)
-    {
-        $tries = 1;
-        do {
-            $success = $this->doAction($token);
-
-            if ($success || $tries >= $this->butlerTryLimit) {
-                break;
-            }
-
-            $token = $this->getRefreshedToken($socialIdentity);
-            $tries++;
-        } while (true);
-
-        return $success;
     }
 
     /**

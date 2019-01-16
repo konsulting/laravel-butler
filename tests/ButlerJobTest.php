@@ -46,12 +46,12 @@ class ButlerJobTest extends DatabaseTestCase
 
         $this->socialIdentity = SocialIdentity::create([
             'access_token'  => 'the access token',
+            'expires_at'    => Carbon::now()->addDay(),
             'refresh_token' => 'the refresh token',
             'user_id'       => $this->user->getAuthIdentifier(),
             'provider'      => 'my-service',
         ]);
     }
-
 
     /** @test */
     public function it_executes_a_job_with_a_valid_access_token()
@@ -63,7 +63,7 @@ class ButlerJobTest extends DatabaseTestCase
     }
 
     /** @test */
-    public function it_refreshes_an_expired_token_before_running_the_task_and_tries_multiple_times()
+    public function it_refreshes_an_expired_token_before_running_the_task_and_invalidates_the_token()
     {
         $this->socialIdentity->update(['expires_at' => Carbon::now()->subDay()]);
         $task = Mockery::mock();
@@ -78,26 +78,11 @@ class ButlerJobTest extends DatabaseTestCase
         // First run, fail
         $task->shouldReceive('run')->with('new token 1')->andReturn(false)->once()->ordered();
 
-        // Refresh after failed run
-        $this->socialiteProvider->shouldReceive('getRefreshResponse')->with('new refresh 1')
-            ->andReturn(['access_token' => 'new token 2'])->once()->ordered();
-
-        // Second run, succeed
-        $task->shouldReceive('run')->with('new token 2')->andReturn(true)->once()->ordered();
-
         MyButlerJob::dispatch($this->user, $task);
-    }
 
-    /** @test */
-    public function it_fails_if_it_exceeds_the_try_limit()
-    {
-        $this->socialiteProvider->shouldReceive('getRefreshResponse')->andReturn(['access_token' => 'a'])->once();
-
-        // $butlerTryLimit is 2 so run should be called twice
-        $task = Mockery::mock();
-        $task->shouldReceive('run')->andReturn(false)->twice();
-
-        MyButlerJob::dispatch($this->user, $task);
+        $this->socialIdentity->refresh();
+        $this->assertNull($this->socialIdentity->access_token);
+        $this->assertNull($this->socialIdentity->expires_at);
     }
 
     /** @test */
@@ -125,8 +110,6 @@ class ButlerJobTest extends DatabaseTestCase
 
 class MyButlerJob extends ButlerJob
 {
-    protected $butlerTryLimit = 2;
-
     private $task;
 
     public function __construct(Authenticatable $user, $task)
@@ -143,7 +126,9 @@ class MyButlerJob extends ButlerJob
     protected function doAction($token)
     {
         // Pass the token to our 'task' so we can assert against it
-        return $this->task->run($token);
+        if (! $this->task->run($token)) {
+            $this->invalidateAccessToken();
+        }
     }
 
     protected function handleException(\Exception $e)

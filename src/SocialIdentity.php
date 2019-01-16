@@ -186,4 +186,14 @@ class SocialIdentity extends Model
 
         return true;
     }
+
+    /**
+     * Remove the access token and expiry date, usually to force a token refresh after a failed request.
+     *
+     * @return bool
+     */
+    public function invalidateAccessToken()
+    {
+        return $this->update(['access_token' => null, 'expires_at' => null]);
+    }
 }
