@@ -25,6 +25,8 @@ class ButlerJobTest extends DatabaseTestCase
     /** @var SocialiteProvider|Mock */
     protected $socialiteProvider;
 
+    protected $mockSocialiteManager = false;
+
     protected function getPackageProviders($app)
     {
         return array_merge(parent::getPackageProviders($app), [SocialiteServiceProvider::class]);

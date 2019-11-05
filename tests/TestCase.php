@@ -4,6 +4,7 @@ namespace Konsulting\Butler;
 
 use Butler;
 use Carbon\Carbon;
+use Illuminate\Contracts\Container\Container;
 use Konsulting\Butler\Fake\Identity;
 use Konsulting\Butler\Fake\Socialite;
 use Konsulting\Butler\Fake\User;
@@ -15,6 +16,8 @@ use Schema;
 abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 {
     const CARBON_NOW = '2018-01-01 10:30:40';
+
+    protected $mockSocialiteManager = true;
 
     /**
      * Get the test Carbon::now() instance. For use in data providers where Carbon::setTestNow() has not been called
@@ -56,7 +59,7 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
     /**
      * Define environment setup.
      *
-     * @param  \Illuminate\Foundation\Application $app
+     * @param \Illuminate\Foundation\Application $app
      * @return void
      */
     protected function getEnvironmentSetUp($app)
@@ -78,9 +81,14 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 
         $app['config']->set('auth.providers.users.model', User::class);
 
-        $app->singleton(SocialiteFactory::class, function () {
-            return new Socialite('test');
-        });
+        if ($this->mockSocialiteManager) {
+            $app->singleton(SocialiteFactory::class, function () {
+                $container = \Mockery::mock(Container::class);
+                $container->shouldIgnoreMissing();
+
+                return new Socialite($container);
+            });
+        }
 
         Route::group([
             'middleware' => 'web',
@@ -112,7 +120,7 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 
         $this->loadMigrationsFrom([
             '--database' => 'testbench',
-            '--path' => realpath(__DIR__ . '/../migrations'),
+            '--path'     => realpath(__DIR__ . '/../migrations'),
         ]);
 
         $this->withFactories(__DIR__ . '/factories');
