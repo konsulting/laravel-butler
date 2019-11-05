@@ -24,7 +24,7 @@ class ButlerDriverTest extends DatabaseTestCase
     /** @var Butler */
     protected $butler;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 

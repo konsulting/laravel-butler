@@ -104,7 +104,7 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
     /**
      * Setup the test environment.
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -112,7 +112,7 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 
         $this->loadMigrationsFrom([
             '--database' => 'testbench',
-            '--realpath' => realpath(__DIR__ . '/../migrations'),
+            '--path' => realpath(__DIR__ . '/../migrations'),
         ]);
 
         $this->withFactories(__DIR__ . '/factories');

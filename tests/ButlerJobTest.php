@@ -30,7 +30,7 @@ class ButlerJobTest extends DatabaseTestCase
         return array_merge(parent::getPackageProviders($app), [SocialiteServiceProvider::class]);
     }
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
