@@ -2,8 +2,6 @@
 
 namespace Konsulting\Butler;
 
-use Carbon\Carbon;
-
 class SocialIdentityTest extends DatabaseTestCase
 {
     /** @test */

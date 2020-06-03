@@ -109,7 +109,6 @@ class ButlerJobTest extends DatabaseTestCase
     }
 }
 
-
 class MyButlerJob extends ButlerJob
 {
     private $task;
@@ -145,5 +144,4 @@ class MyButlerJob extends ButlerJob
 
 class TestException extends ButlerException
 {
-
 }

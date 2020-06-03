@@ -3,10 +3,10 @@
 namespace Konsulting\Butler\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Konsulting\Butler\SocialIdentity;
-use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Notifications\Notification;
+use Konsulting\Butler\SocialIdentity;
 
 class ConfirmSocialIdentity extends Notification implements ShouldQueue
 {

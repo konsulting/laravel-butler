@@ -2,17 +2,17 @@
 
 namespace Konsulting\Butler\Controllers;
 
+use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Routing\Controller as BaseController;
 use Konsulting\Butler\Butler;
 use Konsulting\Butler\Exceptions\NoUser;
-use GuzzleHttp\Exception\ClientException;
-use Laravel\Socialite\Two\InvalidStateException;
+use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
 use Konsulting\Butler\Exceptions\UnableToConfirm;
 use Konsulting\Butler\Exceptions\UnknownProvider;
-use Illuminate\Routing\Controller as BaseController;
-use Laravel\Socialite\Contracts\Factory as SocialiteManager;
 use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
-use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
+use Laravel\Socialite\Contracts\Factory as SocialiteManager;
+use Laravel\Socialite\Two\InvalidStateException;
 
 class AuthController extends BaseController
 {
