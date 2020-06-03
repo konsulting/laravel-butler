@@ -3,10 +3,10 @@
 namespace Konsulting\Butler;
 
 use Butler;
-use Notification;
-use Konsulting\Butler\Fake\User;
 use Konsulting\Butler\Fake\Socialite;
+use Konsulting\Butler\Fake\User;
 use Konsulting\Butler\Notifications\ConfirmSocialIdentity;
+use Notification;
 
 class AuthControllerTest extends DatabaseTestCase
 {

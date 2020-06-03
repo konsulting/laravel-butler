@@ -17,7 +17,7 @@ class SocialIdentity extends Model
     protected $visible = ['id', 'user_id', 'provider', 'confirmed_at'];
 
     /**
-     * @inheritDoc
+     * {@inheritdoc}
      */
     public function getTable()
     {
