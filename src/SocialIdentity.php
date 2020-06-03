@@ -17,6 +17,14 @@ class SocialIdentity extends Model
     protected $visible = ['id', 'user_id', 'provider', 'confirmed_at'];
 
     /**
+     * @inheritDoc
+     */
+    public function getTable()
+    {
+        return config('butler.social_identities_table_name') ?: 'social_identities';
+    }
+
+    /**
      * A Social Identity belongs to a User.
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

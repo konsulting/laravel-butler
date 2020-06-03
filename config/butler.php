@@ -8,6 +8,11 @@ return
     'user_provider' => \Konsulting\Butler\EloquentUserProvider::class,
 
     /*
+     * Social Identities Table Name
+     */
+    'social_identities_table_name' => 'social_identities',
+
+    /*
      * The user class for mapping identities to.
      */
     'user_class' => \App\User::class,
