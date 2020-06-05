@@ -133,6 +133,18 @@ class AuthControllerTest extends DatabaseTestCase
         $this->dontSee('Identity saved');
     }
 
+    public function test_it_will_associate_to_a_logged_in_user_if_allowed_bypassing_the_email_association()
+    {
+        $this->app['config']->set('butler.can_associate_to_logged_in_user', true);
+
+        $user = $this->makeUser('Fred', 'fred@klever.co.uk');
+
+        $this->actingAs($user)
+            ->visitRoute('butler.callback', 'test')
+            ->seeRouteIs(Butler::routeName('profile'))
+            ->seeInDatabase('social_identities', ['user_id' => 1]);
+    }
+
     public function makeUser2()
     {
         return User::create(['name' => 'Roger', 'email' => 'roger@klever.co.uk']);

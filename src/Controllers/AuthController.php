@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Konsulting\Butler\Butler;
 use Konsulting\Butler\Exceptions\NoUser;
 use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
+use Konsulting\Butler\Exceptions\SocialIdentityAssociatedToLoggedInUser;
 use Konsulting\Butler\Exceptions\UnableToConfirm;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
@@ -111,6 +112,10 @@ class AuthController extends BaseController
                 ->with('status.type', 'danger');
         } catch (UserAlreadyHasSocialIdentity $e) {
             return redirect()->route($butler->routeName('profile'));
+        } catch (SocialIdentityAssociatedToLoggedInUser $e) {
+            return redirect()->route($butler->routeName('profile'))
+                ->with('status.content', $e->getMessage())
+                ->with('status.type', 'danger');
         }
     }
 

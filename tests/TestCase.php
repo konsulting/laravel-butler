@@ -136,9 +136,9 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
         });
     }
 
-    protected function makeUser()
+    protected function makeUser($name = 'Keoghan', $email = 'keoghan@klever.co.uk')
     {
-        return User::create(['name' => 'Keoghan', 'email' => 'keoghan@klever.co.uk']);
+        return User::create(['name' => $name, 'email' => $email]);
     }
 
     protected function makeIdentity()

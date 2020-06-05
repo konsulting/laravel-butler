@@ -10,6 +10,7 @@ use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 use Laravel\Socialite\Contracts\User as Identity;
 use Laravel\Socialite\SocialiteManager;
 use stdClass;
+use Konsulting\Butler\Exceptions\SocialIdentityAssociatedToLoggedInUser;
 
 class Butler
 {
@@ -194,6 +195,13 @@ class Butler
     {
         $this->checkProvider($provider);
         $this->guardExistingSocialIdentities($provider, $identity);
+
+        if (config('butler.can_associate_to_logged_in_user', false) === true) {
+            SocialIdentity::createFromOauthIdentity($provider, $this->guard()->user(), $identity);
+
+            throw new SocialIdentityAssociatedToLoggedInUser('Social Identity linked to your account');
+        }
+
         $user = $this->userProvider()->retrieveByOauthIdentity($identity);
 
         if (! $user) {
