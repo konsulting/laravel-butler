@@ -2,19 +2,36 @@
 
 namespace Konsulting\Butler;
 
-use Route;
 use Butler;
-use Schema;
-use Konsulting\Butler\Fake\User;
+use Carbon\Carbon;
+use Illuminate\Contracts\Container\Container;
 use Konsulting\Butler\Fake\Identity;
 use Konsulting\Butler\Fake\Socialite;
-use Orchestra\Database\ConsoleServiceProvider;
+use Konsulting\Butler\Fake\User;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
+use Orchestra\Database\ConsoleServiceProvider;
+use Route;
+use Schema;
 
 abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 {
+    const CARBON_NOW = '2018-01-01 10:30:40';
+
+    protected $mockSocialiteManager = true;
+
     /**
-     * Set up ServiceProviders.
+     * Get the test Carbon::now() instance. For use in data providers where Carbon::setTestNow() has not been called
+     * (because data providers are resolved before PHPUnit's setUp() method).
+     *
+     * @return Carbon
+     */
+    protected static function carbonNow()
+    {
+        return Carbon::parse(static::CARBON_NOW);
+    }
+
+    /**
+     * Set up service providers.
      *
      * @param \Illuminate\Foundation\Application $app
      *
@@ -42,11 +59,13 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
     /**
      * Define environment setup.
      *
-     * @param  \Illuminate\Foundation\Application  $app
+     * @param \Illuminate\Foundation\Application $app
      * @return void
      */
     protected function getEnvironmentSetUp($app)
     {
+        Carbon::setTestNow(static::carbonNow());
+
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
@@ -55,14 +74,21 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
             'prefix'   => '',
         ]);
 
+        $app['config']->set('mail.driver', 'log');
+
         $app['config']->set('butler.providers', ['test' => ['name' => 'Test']]);
         $app['config']->set('butler.user_class', User::class);
 
         $app['config']->set('auth.providers.users.model', User::class);
 
-        $app->singleton(SocialiteFactory::class, function () {
-            return new Socialite('test');
-        });
+        if ($this->mockSocialiteManager) {
+            $app->singleton(SocialiteFactory::class, function () {
+                $container = \Mockery::mock(Container::class);
+                $container->shouldIgnoreMissing();
+
+                return new Socialite($container);
+            });
+        }
 
         Route::group([
             'middleware' => 'web',
@@ -86,7 +112,7 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
     /**
      * Setup the test environment.
      */
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -94,8 +120,10 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 
         $this->loadMigrationsFrom([
             '--database' => 'testbench',
-            '--realpath' => realpath(__DIR__ . '/../migrations'),
+            '--path'     => realpath(__DIR__ . '/../migrations'),
         ]);
+
+        $this->withFactories(__DIR__ . '/factories');
     }
 
     public function createUsersTable()
@@ -108,9 +136,9 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
         });
     }
 
-    protected function makeUser()
+    protected function makeUser($name = 'Keoghan', $email = 'keoghan@klever.co.uk')
     {
-        return User::create(['name' => 'Keoghan', 'email' => 'keoghan@klever.co.uk']);
+        return User::create(['name' => $name, 'email' => $email]);
     }
 
     protected function makeIdentity()

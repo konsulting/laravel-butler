@@ -2,22 +2,51 @@
 
 namespace Konsulting\Butler;
 
-use stdClass;
 use Konsulting\Butler\Exceptions\NoUser;
-use Konsulting\Butler\Exceptions\UnknownProvider;
-use Laravel\Socialite\Contracts\User as Identity;
-use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
 use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
+use Konsulting\Butler\Exceptions\SocialIdentityAssociatedToLoggedInUser;
+use Konsulting\Butler\Exceptions\UnknownProvider;
+use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
+use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
+use Laravel\Socialite\Contracts\User as Identity;
+use Laravel\Socialite\SocialiteManager;
+use stdClass;
 
 class Butler
 {
+    /**
+     * The Socialite instance.
+     *
+     * @var SocialiteManager
+     */
+    protected $socialite;
+
+    /**
+     * The social provider config.
+     *
+     * @var \Illuminate\Support\Collection
+     */
     protected $providers;
+
+    /**
+     * The mapping between route names and URLs within the host application.
+     *
+     * @var \Illuminate\Support\Collection
+     */
     protected $routeNames;
 
-    public function __construct($providers, $routeNames)
+    /**
+     * Butler constructor.
+     *
+     * @param SocialiteFactory $socialite
+     * @param array[]          $providers
+     * @param array            $routeNames
+     */
+    public function __construct(SocialiteFactory $socialite, $providers, $routeNames)
     {
         $this->providers = $this->prepareProviders($providers);
         $this->routeNames = collect($routeNames);
+        $this->socialite = $socialite;
     }
 
     /**
@@ -37,7 +66,7 @@ class Butler
     /**
      * Check that the provider is one that is supported by the app.
      *
-     * @param $name
+     * @param string $name
      *
      * @throws \Konsulting\Butler\Exceptions\UnknownProvider
      */
@@ -75,6 +104,18 @@ class Butler
     }
 
     /**
+     * Get the Butler driver for the given Socialite provider. This wraps the underlying Socialite driver and provides
+     * some extra functionality.
+     *
+     * @param string $providerName
+     * @return ButlerDriver
+     */
+    public function driver($providerName)
+    {
+        return new ButlerDriver($this->socialite->driver($providerName));
+    }
+
+    /**
      * Simple function to include the routes where needed.
      */
     public function routes()
@@ -97,14 +138,14 @@ class Butler
     }
 
     /**
-     * Authenticate a Socialite User (Identity) and update the token
-     * information for a given provider --- only if appropriate
-     * We also check whether the provider is set up for use.
+     * Authenticate a Socialite User (Identity) and update the token information for a given provider --- only if
+     * appropriate. We also check whether the provider is set up for use.
      *
-     * @param                                   $provider
+     * @param string                            $provider The provider name
      * @param \Laravel\Socialite\Contracts\User $identity
      *
      * @return bool
+     * @throws UnknownProvider
      */
     public function authenticate($provider, Identity $identity)
     {
@@ -138,21 +179,29 @@ class Butler
     }
 
     /**
-     * Register an Identity with a user. We'll use the authenticated user,
-     * or if we can't find an appropriate user, create one if allowed.
-     * Otherwise, we will fail through a graceful Exception :).
+     * Register an Identity with a user. We'll use the authenticated user, or if we can't find an appropriate user,
+     * create one if allowed. Otherwise, we will fail through a graceful Exception :).
      *
-     * @param                                   $provider
+     * @param string                            $provider The provider name
      * @param \Laravel\Socialite\Contracts\User $identity
      *
      * @return SocialIdentity
-     * @throws \Konsulting\Butler\Exceptions\NoUser
-     * @throws \Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated
+     * @throws NoUser
+     * @throws SocialIdentityAlreadyAssociated
+     * @throws UnknownProvider
+     * @throws UserAlreadyHasSocialIdentity
      */
     public function register($provider, Identity $identity)
     {
         $this->checkProvider($provider);
         $this->guardExistingSocialIdentities($provider, $identity);
+
+        if (config('butler.can_associate_to_logged_in_user', false) === true) {
+            SocialIdentity::createFromOauthIdentity($provider, $this->guard()->user(), $identity);
+
+            throw new SocialIdentityAssociatedToLoggedInUser('Social Identity linked to your account');
+        }
+
         $user = $this->userProvider()->retrieveByOauthIdentity($identity);
 
         if (! $user) {
@@ -194,6 +243,9 @@ class Butler
      * Confirm a SocialIdentity by providing the token.
      *
      * @param $token
+     *
+     * @return SocialIdentity
+     * @throws Exceptions\UnableToConfirm
      */
     public static function confirmIdentityByToken($token)
     {
@@ -203,7 +255,7 @@ class Butler
     /**
      * Obtain the UserProvider Instance.
      *
-     * @return \Illuminate\Foundation\Application|mixed
+     * @return EloquentUserProvider
      */
     public function userProvider()
     {

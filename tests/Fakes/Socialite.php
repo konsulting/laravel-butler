@@ -3,8 +3,9 @@
 namespace Konsulting\Butler\Fake;
 
 use Laravel\Socialite\Contracts\Factory;
+use Laravel\Socialite\SocialiteManager;
 
-class Socialite implements Factory
+class Socialite extends SocialiteManager implements Factory
 {
     protected $driver;
 
@@ -22,6 +23,6 @@ class Socialite implements Factory
 
     public function user()
     {
-        return new Identity(['id' => 1, 'name'=> 'Keoghan', 'email' => 'keoghan@klever.co.uk']);
+        return new Identity(['id' => 1, 'name' => 'Keoghan', 'email' => 'keoghan@klever.co.uk']);
     }
 }

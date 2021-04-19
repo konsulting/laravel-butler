@@ -50,8 +50,7 @@ class EloquentUserProvider
     }
 
     /**
-     * Create a new user from the provided Identity.
-     * Record it's creation within the instance.
+     * Create a new user from the provided Identity. Record its creation within the instance.
      *
      * @param \Laravel\Socialite\Contracts\User $oauthId
      *

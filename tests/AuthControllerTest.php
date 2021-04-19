@@ -3,13 +3,20 @@
 namespace Konsulting\Butler;
 
 use Butler;
-use Notification;
-use Konsulting\Butler\Fake\User;
 use Konsulting\Butler\Fake\Socialite;
+use Konsulting\Butler\Fake\User;
 use Konsulting\Butler\Notifications\ConfirmSocialIdentity;
+use Notification;
 
-class AuthControllerTest extends TestCase
+class AuthControllerTest extends DatabaseTestCase
 {
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        $this->app->bind('\Laravel\Socialite\Contracts\Factory', Socialite::class);
+    }
+
     public function test_it_redirects_to_a_provider()
     {
         $this->visitRoute('butler.redirect', 'test');
@@ -126,11 +133,16 @@ class AuthControllerTest extends TestCase
         $this->dontSee('Identity saved');
     }
 
-    public function setUp()
+    public function test_it_will_associate_to_a_logged_in_user_if_allowed_bypassing_the_email_association()
     {
-        parent::setUp();
+        $this->app['config']->set('butler.can_associate_to_logged_in_user', true);
 
-        $this->app->singleton('\Laravel\Socialite\Contracts\Factory', Socialite::class);
+        $user = $this->makeUser('Fred', 'fred@klever.co.uk');
+
+        $this->actingAs($user)
+            ->visitRoute('butler.callback', 'test')
+            ->seeRouteIs(Butler::routeName('profile'))
+            ->seeInDatabase('social_identities', ['user_id' => 1]);
     }
 
     public function makeUser2()

@@ -8,6 +8,6 @@ class ButlerFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'butler';
+        return Butler::class;
     }
 }

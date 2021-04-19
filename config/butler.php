@@ -8,6 +8,11 @@ return
     'user_provider' => \Konsulting\Butler\EloquentUserProvider::class,
 
     /*
+     * Social Identities Table Name
+     */
+    'social_identities_table_name' => 'social_identities',
+
+    /*
      * The user class for mapping identities to.
      */
     'user_class' => \App\User::class,
@@ -21,7 +26,7 @@ return
     ],
 
     /*
-     * Can Butler create users if social login is requested for non-exiting user?
+     * Can Butler create users if social login is requested for non-existing user?
      */
     'can_create_users' => false,
 
@@ -39,6 +44,11 @@ return
      * Should we log the user in straight after confirmation?
      */
     'login_immediately_after_confirm' => false,
+
+    /**
+     * Allow Butler to assicate a new identity to the logged in user, rather than matching on email address.
+     */
+    'can_associate_to_logged_in_user' => false,
 
     /*
      * The application routes for us to use when redirecting the user after actions
