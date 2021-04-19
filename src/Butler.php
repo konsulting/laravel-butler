@@ -4,13 +4,13 @@ namespace Konsulting\Butler;
 
 use Konsulting\Butler\Exceptions\NoUser;
 use Konsulting\Butler\Exceptions\SocialIdentityAlreadyAssociated;
+use Konsulting\Butler\Exceptions\SocialIdentityAssociatedToLoggedInUser;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
 use Laravel\Socialite\Contracts\User as Identity;
 use Laravel\Socialite\SocialiteManager;
 use stdClass;
-use Konsulting\Butler\Exceptions\SocialIdentityAssociatedToLoggedInUser;
 
 class Butler
 {

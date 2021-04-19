@@ -46,7 +46,7 @@ return
     'login_immediately_after_confirm' => false,
 
     /**
-     * Allow Butler to assicate a new identity to the logged in user, rather than matching on email address
+     * Allow Butler to assicate a new identity to the logged in user, rather than matching on email address.
      */
     'can_associate_to_logged_in_user' => false,
 
