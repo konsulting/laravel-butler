@@ -196,7 +196,7 @@ class Butler
         $this->checkProvider($provider);
         $this->guardExistingSocialIdentities($provider, $identity);
 
-        if (config('butler.can_associate_to_logged_in_user', false) === true) {
+        if (config('butler.can_associate_to_logged_in_user', false) === true && $this->guard()->user()) {
             SocialIdentity::createFromOauthIdentity($provider, $this->guard()->user(), $identity);
 
             throw new SocialIdentityAssociatedToLoggedInUser('Social Identity linked to your account');
