@@ -43,7 +43,7 @@ class ButlerDriver implements Provider
         'setHttpClient',
         'setRequest',
         'stateless',
-        'with'
+        'with',
     ];
 
     public function __construct(Provider $socialiteProvider)
@@ -102,7 +102,6 @@ class ButlerDriver implements Provider
             ? $this
             : $result;
     }
-
 
     /**
      * @param SocialIdentity $socialIdentity
