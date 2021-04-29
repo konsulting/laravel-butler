@@ -12,23 +12,10 @@ use Konsulting\Butler\Exceptions\SocialIdentityAssociatedToLoggedInUser;
 use Konsulting\Butler\Exceptions\UnableToConfirm;
 use Konsulting\Butler\Exceptions\UnknownProvider;
 use Konsulting\Butler\Exceptions\UserAlreadyHasSocialIdentity;
-use Laravel\Socialite\Contracts\Factory as SocialiteManager;
 use Laravel\Socialite\Two\InvalidStateException;
 
 class AuthController extends BaseController
 {
-    protected $socialite;
-
-    /**
-     * Create a new controller instance.
-     *
-     * @param \Laravel\Socialite\Contracts\Factory $socialite
-     */
-    public function __construct(SocialiteManager $socialite)
-    {
-        $this->socialite = $socialite;
-    }
-
     /**
      * Redirect the user to the appropriate providers' authentication page, to begin authentication.
      *
@@ -36,17 +23,21 @@ class AuthController extends BaseController
      *
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function redirect($provider)
+    public function redirect(Butler $butler, $provider)
     {
         try {
-            \Butler::checkProvider($provider);
+            $butler->checkProvider($provider);
         } catch (UnknownProvider $e) {
-            return redirect()->route(\Butler::routeName('login'))
+            return redirect()->route($butler->routeName('login'))
                 ->with('status.content', 'Unknown Provider.')
                 ->with('status.type', 'warning');
         }
 
-        return $this->socialite->driver($provider)->redirect();
+        $scopes = $butler->provider($provider)->scopes ?? [];
+
+        return empty($scopes)
+            ? $butler->driver($provider)->redirect()
+            : $butler->driver($provider)->scopes($scopes)->redirect();
     }
 
     /**
@@ -62,7 +53,7 @@ class AuthController extends BaseController
     public function callback(Butler $butler, $provider)
     {
         try {
-            $oauthId = $this->socialite->driver($provider)->user();
+            $oauthId = $butler->driver($provider)->user();
         } catch (InvalidStateException $e) {
             return redirect()->route($butler->routeName('login'))
                 ->with('status.content', 'There was a problem logging in with ' . $butler->provider($provider)->name . ', please try again.')
@@ -99,7 +90,7 @@ class AuthController extends BaseController
                 $message = 'Identity saved, please check your email to confirm.';
             }
 
-            return redirect()->route($this->loginOrProfile())
+            return redirect()->route($this->loginOrProfile($butler))
                 ->with('status.content', $message)
                 ->with('status.type', 'success');
         } catch (NoUser $e) {
@@ -126,28 +117,28 @@ class AuthController extends BaseController
      *
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function confirm($token)
+    public function confirm(Butler $butler, $token)
     {
         try {
-            $socialIdentity = Butler::confirmIdentityByToken($token);
+            $socialIdentity = $butler->confirmIdentityByToken($token);
 
             if (config('butler.login_immediately_after_confirm', false)) {
                 $this->guard()->login($socialIdentity->user);
             }
         } catch (UnableToConfirm $e) {
-            return redirect()->route(\Butler::routeName('login'))
+            return redirect()->route($butler->routeName('login'))
                 ->with('status.content', 'Unable to confirm identity usage.')
                 ->with('status.type', 'danger');
         }
 
-        return redirect()->route($this->loginOrProfile())
+        return redirect()->route($this->loginOrProfile($butler))
             ->with('status.content', 'Identity confirmed.')
             ->with('status.type', 'success');
     }
 
-    protected function loginOrProfile()
+    protected function loginOrProfile(Butler $butler)
     {
-        return \Butler::routeName($this->guard()->check() ? 'profile' : 'login');
+        return $butler->routeName($this->guard()->check() ? 'profile' : 'login');
     }
 
     protected function guard()

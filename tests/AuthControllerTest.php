@@ -23,6 +23,14 @@ class AuthControllerTest extends DatabaseTestCase
         $this->see('Redirect to location for test');
     }
 
+    public function test_it_uses_scopes_when_it_redirects_to_a_provider()
+    {
+        $this->app->config->set('butler.providers.test.scopes', ['a_scope', 'a_second_scope']);
+
+        $this->visitRoute('butler.redirect', 'test');
+        $this->see('Redirect to location for test, with a_scope, a_second_scope');
+    }
+
     public function test_it_does_not_redirect_to_an_unknown_provider()
     {
         $this->visitRoute('butler.redirect', 'IdontExist');

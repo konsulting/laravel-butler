@@ -67,6 +67,7 @@ Adjust in `config/butler.php`. Add the providers you want to make available for 
     'providers' => [
         'google' => [
             'name' => 'Google',
+            'scopes' => [], // define any specific scopes you want to request here
             'icon' => 'fa fa-google',
             'class' => 'btn-google',
         ],
@@ -96,13 +97,22 @@ Option | What it’s for
 user_provider | It finds and creates users for Butler. Only creating if it is allowed to.
 social_identities_table_name | The table used for storing social identities
 user_class | The applications user model, used by the user provider, and the SocialIdentity class to set up the user relation.
-providers | The list of Social Login providers that Butler needs to be aware of. (These are essentially the Socialite Drivers you are using). It is used to populate the Notification to users and the list view.
+providers | The list of Social Login providers that Butler needs to be aware of. (These are essentially the Socialite Drivers you are using). It is used to populate the Notification to users and the list view, we also allow a list of scopes to request to be set here.
 can_create_users | Sets whether Butler is allowed to create users when a new Social Identity is received and there is no matching user account.
 confirm_identity_for_new_user | Sets whether to ask the user to confirm the identity if it is their first one and they just created the account.
 confirm_identity_notification | The Notification class to use when telling the user that we had a Social Identification request. Sent when using the AuthController.
 can_associate_to_logged_in_user | Allow Butler to associate a new identity to the logged in user, rather than matching on email address.
 login_immediately_after_confirm | Should we log someone in straight after confirming via email, default is false.
 route_map | Defines the mapping of Butler's name for special routes in the application to actual application values. We’ve set some common ones out of the box.
+
+## Butler Driver
+We wrap the socialite driver in a Butler Driver which adds a methods to `refresh()` a social identity using the refresh token.
+It will also proxy all the usual SocialiteProvider methods to the orginal provider.
+
+```php
+	$driver = \Butler::driver(string $providerName); // For a specific social identity, this would be $socialIdentity->provider
+	$driver->refresh($socialIdentity);
+```
 
 ## Security
 

@@ -82,7 +82,7 @@ class Butler
      *
      * E.g. when presenting a list of buttons in a view
      *
-     * @return \Konsulting\Butler\Butler
+     * @return \Illuminate\Support\Collection
      */
     public function providers()
     {

@@ -10,6 +10,18 @@ use Konsulting\Butler\Exceptions\UnrefreshableProvider;
 use Laravel\Socialite\Contracts\Provider;
 use Laravel\Socialite\Two\AbstractProvider;
 
+/**
+ * @method \Laravel\Socialite\Two\User userFromToken(string $token) Get a Social User instance from a known access token.
+ * @method array getAccessTokenResponse(string $code) Get the access token response for the given code.
+ * @method $this scopes(array|string $scopes) Merge the scopes of the requested access.
+ * @method $this setScopes(array|string $scopes) Set the scopes of the requested access.
+ * @method array getScopes() Get the current scopes.
+ * @method $this redirectUrl(string $url) Set the redirect url.
+ * @method $this setHttpClient(\GuzzleHttp\Client $client) Set the Guzzle HTTP client instance.
+ * @method $this setRequest(\Illuminate\Http\Request $request) Set the request instance.
+ * @method $this stateless() Indicates that the provider should operate as stateless.
+ * @method $this with(array $parameters) Set the custom parameters of the request.
+ */
 class ButlerDriver implements Provider
 {
     /**
@@ -19,9 +31,34 @@ class ButlerDriver implements Provider
      */
     private $socialiteProvider;
 
+    /**
+     * ButlerDriver constructor.
+     *
+     * @param  Provider  $socialiteProvider
+     */
+    protected $overrideReturn = [
+        'scopes',
+        'setScopes',
+        'redirectUrl',
+        'setHttpClient',
+        'setRequest',
+        'stateless',
+        'with'
+    ];
+
     public function __construct(Provider $socialiteProvider)
     {
         $this->socialiteProvider = $socialiteProvider;
+    }
+
+    /**
+     * Get the original Socialite Provider instance.
+     *
+     * @return AbstractProvider
+     */
+    public function getSocialiteProvider()
+    {
+        return $this->socialiteProvider;
     }
 
     /**
@@ -43,6 +80,29 @@ class ButlerDriver implements Provider
     {
         return $this->socialiteProvider->user();
     }
+
+    /**
+     * Proxy calls to the Socialite Provider, if we can.
+     *
+     * @param $method
+     * @param $parameters
+     *
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        if (! method_exists($this->socialiteProvider, $method)) {
+            throw new \BadMethodCallException("Unable to proxy '{$method}' call to Socialite Provider from ButlerDriver");
+        }
+
+        $result = $this->socialiteProvider->$method(...$parameters);
+
+        // Return Butler driver instead of Socialite Provider where needed
+        return in_array($method, $this->overrideReturn, true)
+            ? $this
+            : $result;
+    }
+
 
     /**
      * @param SocialIdentity $socialIdentity

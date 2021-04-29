@@ -21,8 +21,8 @@ return
      * A list of providers to use. These map to Socialite Drivers.
      */
     'providers' => [
-        // 'google' => ['name' => 'Google', 'icon' => 'fa fa-google', 'class' => 'btn-google'],
-        // 'facebook' => ['name' => 'Facebook', 'icon' => 'fa fa-facebook', 'class' => 'btn-facebook'],
+        // 'google' => ['name' => 'Google', 'scopes' => [], 'icon' => 'fa fa-google', 'class' => 'btn-google'],
+        // 'facebook' => ['name' => 'Facebook', 'scopes' => [], 'icon' => 'fa fa-facebook', 'class' => 'btn-facebook'],
     ],
 
     /*
