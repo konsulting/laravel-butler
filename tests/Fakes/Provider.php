@@ -1,8 +1,6 @@
 <?php
 
-
 namespace Konsulting\Butler\Fake;
-
 
 class Provider implements \Laravel\Socialite\Contracts\Provider
 {
@@ -16,7 +14,7 @@ class Provider implements \Laravel\Socialite\Contracts\Provider
 
     public function redirect()
     {
-        return 'redirect to location for ' . $this->driver . (empty($this->scopes) ? '' : ', with '.implode(', ', $this->scopes));
+        return 'redirect to location for ' . $this->driver . (empty($this->scopes) ? '' : ', with ' . implode(', ', $this->scopes));
     }
 
     public function user()
