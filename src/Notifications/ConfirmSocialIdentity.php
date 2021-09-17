@@ -17,7 +17,7 @@ class ConfirmSocialIdentity extends Notification implements ShouldQueue
     /**
      * Create a new notification instance.
      *
-     * @param \Konsulting\Butler\SocialIdentity $identity
+     * @param  \Konsulting\Butler\SocialIdentity  $identity
      */
     public function __construct(SocialIdentity $identity)
     {

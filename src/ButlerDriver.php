@@ -86,7 +86,6 @@ class ButlerDriver implements Provider
      *
      * @param $method
      * @param $parameters
-     *
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -104,8 +103,9 @@ class ButlerDriver implements Provider
     }
 
     /**
-     * @param SocialIdentity $socialIdentity
+     * @param  SocialIdentity  $socialIdentity
      * @return SocialIdentity
+     *
      * @throws UnrefreshableProvider
      * @throws CouldNotRefreshToken
      */
@@ -133,7 +133,8 @@ class ButlerDriver implements Provider
     /**
      * Check that the response is an array and contains an access token.
      *
-     * @param array $response
+     * @param  array  $response
+     *
      * @throws CouldNotRefreshToken
      */
     protected function validateRefreshResponse($response)
