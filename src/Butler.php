@@ -38,9 +38,9 @@ class Butler
     /**
      * Butler constructor.
      *
-     * @param SocialiteFactory $socialite
-     * @param array[]          $providers
-     * @param array            $routeNames
+     * @param  SocialiteFactory  $socialite
+     * @param  array[]  $providers
+     * @param  array  $routeNames
      */
     public function __construct(SocialiteFactory $socialite, $providers, $routeNames)
     {
@@ -53,7 +53,6 @@ class Butler
      * Prepare the incoming providers array into a collection of simple objects.
      *
      * @param $providers
-     *
      * @return \Illuminate\Support\Collection
      */
     protected function prepareProviders($providers)
@@ -66,7 +65,7 @@ class Butler
     /**
      * Check that the provider is one that is supported by the app.
      *
-     * @param string $name
+     * @param  string  $name
      *
      * @throws \Konsulting\Butler\Exceptions\UnknownProvider
      */
@@ -93,7 +92,6 @@ class Butler
      * Return a single provider's details.
      *
      * @param $provider
-     *
      * @return stdClass
      */
     public function provider($provider)
@@ -107,7 +105,7 @@ class Butler
      * Get the Butler driver for the given Socialite provider. This wraps the underlying Socialite driver and provides
      * some extra functionality.
      *
-     * @param string $providerName
+     * @param  string  $providerName
      * @return ButlerDriver
      */
     public function driver($providerName)
@@ -129,24 +127,22 @@ class Butler
      * to fit in with the application more easily.
      *
      * @param $key
-     *
      * @return mixed
      */
     public function routeName($key)
     {
         // Allow temporary override of routes
-        if (session('butler.redirect.'.$key)) {
-            return session('butler.redirect.'.$key);
+        if (session('butler.redirect.' . $key)) {
+            return session('butler.redirect.' . $key);
         }
 
         return $this->routeNames[$key];
     }
 
     /**
-     * Handle forced redirection to full urls, or routes with parameters, as well as plain routes names
+     * Handle forced redirection to full urls, or routes with parameters, as well as plain routes names.
      *
      * @param $key
-     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function redirectResponseTo($key)
@@ -168,10 +164,10 @@ class Butler
      * Authenticate a Socialite User (Identity) and update the token information for a given provider --- only if
      * appropriate. We also check whether the provider is set up for use.
      *
-     * @param string                            $provider The provider name
-     * @param \Laravel\Socialite\Contracts\User $identity
-     *
+     * @param  string  $provider  The provider name
+     * @param  \Laravel\Socialite\Contracts\User  $identity
      * @return bool
+     *
      * @throws UnknownProvider
      */
     public function authenticate($provider, Identity $identity)
@@ -209,10 +205,10 @@ class Butler
      * Register an Identity with a user. We'll use the authenticated user, or if we can't find an appropriate user,
      * create one if allowed. Otherwise, we will fail through a graceful Exception :).
      *
-     * @param string                            $provider The provider name
-     * @param \Laravel\Socialite\Contracts\User $identity
-     *
+     * @param  string  $provider  The provider name
+     * @param  \Laravel\Socialite\Contracts\User  $identity
      * @return SocialIdentity
+     *
      * @throws NoUser
      * @throws SocialIdentityAlreadyAssociated
      * @throws UnknownProvider
@@ -270,8 +266,8 @@ class Butler
      * Confirm a SocialIdentity by providing the token.
      *
      * @param $token
-     *
      * @return SocialIdentity
+     *
      * @throws Exceptions\UnableToConfirm
      */
     public static function confirmIdentityByToken($token)
@@ -293,7 +289,6 @@ class Butler
      * Check if butler created the user.
      *
      * @param $user
-     *
      * @return mixed
      */
     public function createdUser($user)

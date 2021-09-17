@@ -20,7 +20,6 @@ class AuthController extends BaseController
      * Redirect the user to the appropriate providers' authentication page, to begin authentication.
      *
      * @param $provider
-     *
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function redirect(Butler $butler, $provider)
@@ -43,10 +42,10 @@ class AuthController extends BaseController
     /**
      * Obtain the user information from the provider, store details, and log in if appropriate.
      *
-     * @param Butler $butler
-     * @param        $provider
-     *
+     * @param  Butler  $butler
+     * @param  $provider
      * @return RedirectResponse
+     *
      * @throws UnableToConfirm
      * @throws UnknownProvider
      */
@@ -114,7 +113,6 @@ class AuthController extends BaseController
      * Confirm a Social Identity by matching the unique code.
      *
      * @param $token
-     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function confirm(Butler $butler, $token)
