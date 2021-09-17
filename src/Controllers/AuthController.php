@@ -28,7 +28,7 @@ class AuthController extends BaseController
         try {
             $butler->checkProvider($provider);
         } catch (UnknownProvider $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', 'Unknown Provider.')
                 ->with('status.type', 'warning');
         }
@@ -55,7 +55,7 @@ class AuthController extends BaseController
         try {
             $oauthId = $butler->driver($provider)->user();
         } catch (InvalidStateException $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', 'There was a problem logging in with ' . $butler->provider($provider)->name . ', please try again.')
                 ->with('status.type', 'warning');
         } catch (ClientException $e) {
@@ -63,13 +63,13 @@ class AuthController extends BaseController
             // The most likely reason is that someone denied the link-up to our site. So
             // we will return to login with an appropriate message for that scenario.
 
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', 'You have cancelled the login with ' . $butler->provider($provider)->name . '.')
                 ->with('status.type', 'warning');
         }
 
         if ($butler->authenticate($provider, $oauthId)) {
-            return redirect()->route($butler->routeName('authenticated'));
+            return $butler->redirectResponseTo('authenticated');
         }
 
         try {
@@ -90,21 +90,21 @@ class AuthController extends BaseController
                 $message = 'Identity saved, please check your email to confirm.';
             }
 
-            return redirect()->route($this->loginOrProfile($butler))
+            return $butler->redirectResponseTo($this->loginOrProfile($butler)
                 ->with('status.content', $message)
                 ->with('status.type', 'success');
         } catch (NoUser $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');
         } catch (SocialIdentityAlreadyAssociated $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');
         } catch (UserAlreadyHasSocialIdentity $e) {
-            return redirect()->route($butler->routeName('profile'));
+            return $butler->redirectResponseTo('profile');
         } catch (SocialIdentityAssociatedToLoggedInUser $e) {
-            return redirect()->route($butler->routeName('profile'))
+            return $butler->redirectResponseTo('profile')
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');
         }
@@ -126,7 +126,7 @@ class AuthController extends BaseController
                 $this->guard()->login($socialIdentity->user);
             }
         } catch (UnableToConfirm $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', 'Unable to confirm identity usage.')
                 ->with('status.type', 'danger');
         }
@@ -138,7 +138,7 @@ class AuthController extends BaseController
 
     protected function loginOrProfile(Butler $butler)
     {
-        return $butler->routeName($this->guard()->check() ? 'profile' : 'login');
+        return $this->guard()->check() ? 'profile' : 'login';
     }
 
     protected function guard()

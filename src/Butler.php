@@ -143,6 +143,28 @@ class Butler
     }
 
     /**
+     * Handle forced redirection to full urls, or routes with parameters, as well as plain routes names
+     *
+     * @param $key
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function redirectResponseTo($key)
+    {
+        $redirectTo = $this->routeName($key);
+
+        if (is_array($redirectTo)) {
+            return redirect()->route(...$redirectTo);
+        }
+
+        if (strpos($redirectTo, '/') === 0 || strpos($redirectTo, 'https://') === 0 || strpos($redirectTo, 'http://') === 0) {
+            return redirect()->to($redirectTo);
+        }
+
+        return redirect()->route($key);
+    }
+
+    /**
      * Authenticate a Socialite User (Identity) and update the token information for a given provider --- only if
      * appropriate. We also check whether the provider is set up for use.
      *
