@@ -90,7 +90,7 @@ class AuthController extends BaseController
                 $message = 'Identity saved, please check your email to confirm.';
             }
 
-            return $butler->redirectResponseTo($this->loginOrProfile($butler)
+            return $butler->redirectResponseTo($this->loginOrProfile($butler))
                 ->with('status.content', $message)
                 ->with('status.type', 'success');
         } catch (NoUser $e) {
