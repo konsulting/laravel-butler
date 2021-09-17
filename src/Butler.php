@@ -134,6 +134,11 @@ class Butler
      */
     public function routeName($key)
     {
+        // Allow temporary override of routes
+        if (session('butler.redirect.'.$key)) {
+            return session('butler.redirect.'.$key);
+        }
+
         return $this->routeNames[$key];
     }
 
