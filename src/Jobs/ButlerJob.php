@@ -43,7 +43,7 @@ abstract class ButlerJob
     /**
      * The main body of the job. This will be attempted multiple times following token refreshes if $butlerTryLimit > 1.
      *
-     * @param string $token
+     * @param  string  $token
      * @return bool
      */
     abstract protected function doAction($token);
@@ -51,9 +51,10 @@ abstract class ButlerJob
     /**
      * Handle the exception caught in the process of executing the action or refreshing the token.
      *
-     * @param \Exception $e
-     * @throws \Exception
+     * @param  \Exception  $e
      * @return mixed
+     *
+     * @throws \Exception
      */
     protected function handleException(\Exception $e)
     {
@@ -75,6 +76,7 @@ abstract class ButlerJob
      * Handle the job.
      *
      * @return bool
+     *
      * @throws \Exception
      */
     public function handle()
@@ -92,8 +94,8 @@ abstract class ButlerJob
     /**
      * Get the access token for the social identity, refreshing if necessary.
      *
-     * @param SocialIdentity $socialIdentity
-     * @param bool           $forceRefresh
+     * @param  SocialIdentity  $socialIdentity
+     * @param  bool  $forceRefresh
      * @return string The access token
      */
     private function getToken(SocialIdentity $socialIdentity, $forceRefresh = false)
@@ -108,7 +110,7 @@ abstract class ButlerJob
     /**
      * Refresh the tokens on the social identity model.
      *
-     * @param SocialIdentity $socialIdentity
+     * @param  SocialIdentity  $socialIdentity
      * @return SocialIdentity
      */
     private function refreshSocialIdentityTokens($socialIdentity)
@@ -120,6 +122,7 @@ abstract class ButlerJob
      * Retrieve the social identity from the user model.
      *
      * @return SocialIdentity|Model
+     *
      * @throws \Exception
      */
     private function getSocialIdentityFromUser()
