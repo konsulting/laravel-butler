@@ -157,7 +157,7 @@ class Butler
             return redirect()->to($redirectTo);
         }
 
-        return redirect()->route($key);
+        return redirect()->route($redirectTo);
     }
 
     /**
