@@ -20,7 +20,6 @@ class AuthController extends BaseController
      * Redirect the user to the appropriate providers' authentication page, to begin authentication.
      *
      * @param $provider
-     *
      * @return RedirectResponse|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function redirect(Butler $butler, $provider)
@@ -28,7 +27,7 @@ class AuthController extends BaseController
         try {
             $butler->checkProvider($provider);
         } catch (UnknownProvider $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', 'Unknown Provider.')
                 ->with('status.type', 'warning');
         }
@@ -43,10 +42,10 @@ class AuthController extends BaseController
     /**
      * Obtain the user information from the provider, store details, and log in if appropriate.
      *
-     * @param Butler $butler
-     * @param        $provider
-     *
+     * @param  Butler  $butler
+     * @param  $provider
      * @return RedirectResponse
+     *
      * @throws UnableToConfirm
      * @throws UnknownProvider
      */
@@ -55,7 +54,7 @@ class AuthController extends BaseController
         try {
             $oauthId = $butler->driver($provider)->user();
         } catch (InvalidStateException $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', 'There was a problem logging in with ' . $butler->provider($provider)->name . ', please try again.')
                 ->with('status.type', 'warning');
         } catch (ClientException $e) {
@@ -63,13 +62,13 @@ class AuthController extends BaseController
             // The most likely reason is that someone denied the link-up to our site. So
             // we will return to login with an appropriate message for that scenario.
 
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', 'You have cancelled the login with ' . $butler->provider($provider)->name . '.')
                 ->with('status.type', 'warning');
         }
 
         if ($butler->authenticate($provider, $oauthId)) {
-            return redirect()->route($butler->routeName('authenticated'));
+            return $butler->redirectResponseTo('authenticated');
         }
 
         try {
@@ -90,21 +89,21 @@ class AuthController extends BaseController
                 $message = 'Identity saved, please check your email to confirm.';
             }
 
-            return redirect()->route($this->loginOrProfile($butler))
+            return $butler->redirectResponseTo($this->loginOrProfile($butler))
                 ->with('status.content', $message)
                 ->with('status.type', 'success');
         } catch (NoUser $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');
         } catch (SocialIdentityAlreadyAssociated $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');
         } catch (UserAlreadyHasSocialIdentity $e) {
-            return redirect()->route($butler->routeName('profile'));
+            return $butler->redirectResponseTo('profile');
         } catch (SocialIdentityAssociatedToLoggedInUser $e) {
-            return redirect()->route($butler->routeName('profile'))
+            return $butler->redirectResponseTo('profile')
                 ->with('status.content', $e->getMessage())
                 ->with('status.type', 'danger');
         }
@@ -114,7 +113,6 @@ class AuthController extends BaseController
      * Confirm a Social Identity by matching the unique code.
      *
      * @param $token
-     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function confirm(Butler $butler, $token)
@@ -126,7 +124,7 @@ class AuthController extends BaseController
                 $this->guard()->login($socialIdentity->user);
             }
         } catch (UnableToConfirm $e) {
-            return redirect()->route($butler->routeName('login'))
+            return $butler->redirectResponseTo('login')
                 ->with('status.content', 'Unable to confirm identity usage.')
                 ->with('status.type', 'danger');
         }
@@ -138,7 +136,7 @@ class AuthController extends BaseController
 
     protected function loginOrProfile(Butler $butler)
     {
-        return $butler->routeName($this->guard()->check() ? 'profile' : 'login');
+        return $this->guard()->check() ? 'profile' : 'login';
     }
 
     protected function guard()
