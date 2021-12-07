@@ -129,7 +129,7 @@ class AuthController extends BaseController
                 ->with('status.type', 'danger');
         }
 
-        return redirect()->route($this->loginOrProfile($butler))
+        return $butler->redirectResponseTo($this->loginOrProfile($butler))
             ->with('status.content', 'Identity confirmed.')
             ->with('status.type', 'success');
     }
