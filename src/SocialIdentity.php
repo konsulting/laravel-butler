@@ -51,9 +51,6 @@ class SocialIdentity extends Model
      * details provided through the Oauth Identity. We store all of
      * the token information to allow use of the provider API.
      *
-     * @param  $provider
-     * @param  $user
-     * @param  \Laravel\Socialite\Contracts\User  $identity
      * @return static
      */
     public static function createFromOauthIdentity($provider, $user, Identity $identity)
@@ -96,7 +93,6 @@ class SocialIdentity extends Model
     /**
      * Confirm a SocialIdentity after locating it by its token.
      *
-     * @param  $token
      * @return static
      *
      * @throws \Konsulting\Butler\Exceptions\UnableToConfirm
@@ -120,7 +116,7 @@ class SocialIdentity extends Model
     public function confirm()
     {
         if ($this->pastConfirmationDeadline()) {
-            throw new UnableToConfirm();
+            throw new UnableToConfirm;
         }
 
         $this->confirmed_at = Carbon::now();
@@ -141,8 +137,6 @@ class SocialIdentity extends Model
 
     /**
      * Update details based on provided Oauth Identity.
-     *
-     * @param  \Laravel\Socialite\Contracts\User  $identity
      */
     public function updateFromOauthIdentity(Identity $identity)
     {
@@ -156,8 +150,6 @@ class SocialIdentity extends Model
     /**
      * Locate a confirmed SocialIdentity based on the info in an Oauth Identity.
      *
-     * @param  $provider
-     * @param  \Laravel\Socialite\Contracts\User  $identity
      * @return static|null
      */
     public static function retrieveByOauthIdentity($provider, Identity $identity)
@@ -172,15 +164,13 @@ class SocialIdentity extends Model
      * Locate a SocialIdentity that is confirmed or awaiting
      * confirmation based on the info in an Oauth Identity.
      *
-     * @param  $provider
-     * @param  \Laravel\Socialite\Contracts\User  $identity
      * @return static|null
      */
     public static function retrievePossibleByOauthIdentity($provider, Identity $identity)
     {
         return static::where('provider', $provider)
             ->where('reference', $identity->getId())
-            ->where(function ($query) {
+            ->where(function ($query): void {
                 $now = Carbon::now();
 
                 $query->where('confirmed_at', '<=', $now)

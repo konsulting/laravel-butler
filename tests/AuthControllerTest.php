@@ -10,11 +10,11 @@ use Notification;
 
 class AuthControllerTest extends DatabaseTestCase
 {
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
-        $this->app->bind('\Laravel\Socialite\Contracts\Factory', Socialite::class);
+        $this->app->bind(\Laravel\Socialite\Contracts\Factory::class, Socialite::class);
     }
 
     public function test_it_redirects_to_a_provider()
@@ -89,7 +89,7 @@ class AuthControllerTest extends DatabaseTestCase
         );
     }
 
-    public function test_it_DOESNT_create_a_user_if_not_allowed_on_callback()
+    public function test_it_doesn_t_create_a_user_if_not_allowed_on_callback()
     {
         $this->stopUserCreation();
 

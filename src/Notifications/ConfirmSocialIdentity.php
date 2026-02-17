@@ -16,8 +16,6 @@ class ConfirmSocialIdentity extends Notification implements ShouldQueue
 
     /**
      * Create a new notification instance.
-     *
-     * @param  \Konsulting\Butler\SocialIdentity  $identity
      */
     public function __construct(SocialIdentity $identity)
     {
@@ -43,11 +41,11 @@ class ConfirmSocialIdentity extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $provider = ucfirst($this->identity->provider);
+        $provider = ucfirst((string) $this->identity->provider);
 
         return (new MailMessage)
-                    ->line("We received a request allow you to login with {$provider}.")
-                    ->line('If you did not request this, please ignore and delete this email. The request will expire in 30 minutes.')
-                    ->action('Confirm', route('butler.confirm', $this->identity->confirm_token));
+            ->line("We received a request allow you to login with {$provider}.")
+            ->line('If you did not request this, please ignore and delete this email. The request will expire in 30 minutes.')
+            ->action('Confirm', route('butler.confirm', $this->identity->confirm_token));
     }
 }

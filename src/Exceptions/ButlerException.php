@@ -2,6 +2,4 @@
 
 namespace Konsulting\Butler\Exceptions;
 
-class ButlerException extends \Exception
-{
-}
+class ButlerException extends \Exception {}

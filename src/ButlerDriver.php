@@ -25,13 +25,6 @@ use Laravel\Socialite\Two\AbstractProvider;
 class ButlerDriver implements Provider
 {
     /**
-     * The Socialite provider instance.
-     *
-     * @var AbstractProvider
-     */
-    private $socialiteProvider;
-
-    /**
      * ButlerDriver constructor.
      *
      * @param  Provider  $socialiteProvider
@@ -46,10 +39,12 @@ class ButlerDriver implements Provider
         'with',
     ];
 
-    public function __construct(Provider $socialiteProvider)
-    {
-        $this->socialiteProvider = $socialiteProvider;
-    }
+    public function __construct(
+        /**
+         * The Socialite provider instance.
+         */
+        private readonly Provider $socialiteProvider
+    ) {}
 
     /**
      * Get the original Socialite Provider instance.
@@ -84,8 +79,6 @@ class ButlerDriver implements Provider
     /**
      * Proxy calls to the Socialite Provider, if we can.
      *
-     * @param  $method
-     * @param  $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -103,7 +96,6 @@ class ButlerDriver implements Provider
     }
 
     /**
-     * @param  SocialIdentity  $socialIdentity
      * @return SocialIdentity
      *
      * @throws UnrefreshableProvider
@@ -140,7 +132,7 @@ class ButlerDriver implements Provider
     protected function validateRefreshResponse($response)
     {
         if (! is_array($response) || ! array_key_exists('access_token', $response)) {
-            throw new CouldNotRefreshToken('Bad response received: ' . serialize($response));
+            throw new CouldNotRefreshToken('Bad response received: '.serialize($response));
         }
     }
 }

@@ -2,6 +2,4 @@
 
 namespace Konsulting\Butler\Exceptions;
 
-class CouldNotRefreshToken extends ButlerException
-{
-}
+class CouldNotRefreshToken extends ButlerException {}

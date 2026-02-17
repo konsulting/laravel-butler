@@ -33,16 +33,14 @@ class ButlerJobTest extends DatabaseTestCase
         return array_merge(parent::getPackageProviders($app), [SocialiteServiceProvider::class]);
     }
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
         $socialite = app(Factory::class);
         $this->socialiteProvider = Mockery::mock(SocialiteProvider::class, RefreshableProvider::class);
 
-        $socialite->extend('my-service', function () {
-            return $this->socialiteProvider;
-        });
+        $socialite->extend('my-service', fn () => $this->socialiteProvider);
 
         $this->user = Mockery::mock(Authenticatable::class);
         $this->user->shouldReceive('getAuthIdentifier')->andReturn(1);
@@ -112,12 +110,9 @@ class ButlerJobTest extends DatabaseTestCase
 
 class MyButlerJob extends ButlerJob
 {
-    private $task;
-
-    public function __construct(Authenticatable $user, $task)
+    public function __construct(Authenticatable $user, private $task)
     {
         parent::__construct($user);
-        $this->task = $task;
     }
 
     protected function getSocialProviderName()
@@ -133,7 +128,7 @@ class MyButlerJob extends ButlerJob
         }
     }
 
-    protected function handleException(\Exception $e)
+    protected function handleException(\Throwable $e)
     {
         if ($e instanceof TestException) {
             return $this->task->handleException($e);
@@ -143,6 +138,4 @@ class MyButlerJob extends ButlerJob
     }
 }
 
-class TestException extends ButlerException
-{
-}
+class TestException extends ButlerException {}

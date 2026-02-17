@@ -59,7 +59,7 @@ class BasicButlerTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'keoghan@klever.co.uk']);
     }
 
-    public function test_it_will_NOT_create_a_user_if_not_allowed()
+    public function test_it_will_no_t_create_a_user_if_not_allowed()
     {
         $identity = $this->makeIdentity();
 

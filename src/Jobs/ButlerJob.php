@@ -56,7 +56,7 @@ abstract class ButlerJob
      *
      * @throws \Exception
      */
-    protected function handleException(\Exception $e)
+    protected function handleException(\Throwable $e)
     {
         throw $e;
     }
@@ -94,7 +94,6 @@ abstract class ButlerJob
     /**
      * Get the access token for the social identity, refreshing if necessary.
      *
-     * @param  SocialIdentity  $socialIdentity
      * @param  bool  $forceRefresh
      * @return string The access token
      */
@@ -131,8 +130,8 @@ abstract class ButlerJob
             ->where('provider', $this->getSocialProviderName())->first();
 
         if (! $socialIdentity) {
-            throw new SocialIdentityNotFound('User ' . $this->user->getAuthIdentifier() .
-                ' does not have a social identity for ' . $this->getSocialProviderName());
+            throw new SocialIdentityNotFound('User '.$this->user->getAuthIdentifier().
+                ' does not have a social identity for '.$this->getSocialProviderName());
         }
 
         return $socialIdentity;

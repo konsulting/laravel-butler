@@ -4,17 +4,13 @@ namespace Konsulting\Butler\Fake;
 
 class Provider implements \Laravel\Socialite\Contracts\Provider
 {
-    protected $driver;
     protected $scopes = [];
 
-    public function __construct($driver)
-    {
-        $this->driver = $driver;
-    }
+    public function __construct(protected $driver) {}
 
     public function redirect()
     {
-        return 'redirect to location for ' . $this->driver . (empty($this->scopes) ? '' : ', with ' . implode(', ', $this->scopes));
+        return 'redirect to location for '.$this->driver.(empty($this->scopes) ? '' : ', with '.implode(', ', $this->scopes));
     }
 
     public function user()

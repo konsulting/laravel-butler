@@ -10,30 +10,28 @@ class ButlerServiceProvider extends ServiceProvider
 {
     public function boot()
     {
-        $this->loadViewsFrom(__DIR__ . '/../views', 'butler');
+        $this->loadViewsFrom(__DIR__.'/../views', 'butler');
 
         $this->publishes([
-            __DIR__ . '/../config/butler.php' => config_path('butler.php'),
+            __DIR__.'/../config/butler.php' => config_path('butler.php'),
         ], 'config');
 
         $this->publishes([
-            __DIR__ . '/../views' => resource_path('views/vendor/butler'),
+            __DIR__.'/../views' => resource_path('views/vendor/butler'),
         ], 'views');
 
-        $this->loadMigrationsFrom(__DIR__ . '/../migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../migrations');
     }
 
     public function register()
     {
-        $this->mergeConfigFrom(__DIR__ . '/../config/butler.php', 'butler');
+        $this->mergeConfigFrom(__DIR__.'/../config/butler.php', 'butler');
 
-        $this->app->bind(Butler::class, function (Application $app) {
-            return new Butler(
-                $app->make(Factory::class),
-                $app['config']['butler.providers'],
-                $app['config']['butler.route_map']
-            );
-        });
+        $this->app->bind(Butler::class, fn (Application $app) => new Butler(
+            $app->make(Factory::class),
+            $app['config']['butler.providers'],
+            $app['config']['butler.route_map']
+        ));
 
         $this->app->alias(Butler::class, 'butler');
 

@@ -6,19 +6,14 @@ use Laravel\Socialite\Contracts\User as Identity;
 
 class EloquentUserProvider
 {
-    protected $model;
     protected $canCreateUsers = false;
+
     protected $createdUsers = [];
 
     /**
      * EloquentUserProvider constructor.
-     *
-     * @param  $model
      */
-    public function __construct($model)
-    {
-        $this->model = $model;
-    }
+    public function __construct(protected $model) {}
 
     /**
      * Set whether the provider is allowed to create users or not.
@@ -38,7 +33,6 @@ class EloquentUserProvider
      * the Identity provided. In most cases this will be matching
      * by email address, as there's not much else to go on...
      *
-     * @param  \Laravel\Socialite\Contracts\User  $oauthId
      * @return mixed
      */
     public function retrieveByOauthIdentity(Identity $oauthId)
@@ -50,7 +44,6 @@ class EloquentUserProvider
     /**
      * Create a new user from the provided Identity. Record its creation within the instance.
      *
-     * @param  \Laravel\Socialite\Contracts\User  $oauthId
      * @return mixed|null
      */
     public function createFromOauthIdentity(Identity $oauthId)
@@ -72,7 +65,6 @@ class EloquentUserProvider
     /**
      * Confirm or deny whether we created a user.
      *
-     * @param  $user
      * @return bool
      */
     public function createdUser($user)

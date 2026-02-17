@@ -2,6 +2,4 @@
 
 namespace Konsulting\Butler\Exceptions;
 
-class SocialIdentityNotFound extends ButlerException
-{
-}
+class SocialIdentityNotFound extends ButlerException {}

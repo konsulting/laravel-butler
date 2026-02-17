@@ -38,7 +38,6 @@ class Butler
     /**
      * Butler constructor.
      *
-     * @param  SocialiteFactory  $socialite
      * @param  array[]  $providers
      * @param  array  $routeNames
      */
@@ -52,14 +51,11 @@ class Butler
     /**
      * Prepare the incoming providers array into a collection of simple objects.
      *
-     * @param  $providers
      * @return \Illuminate\Support\Collection
      */
     protected function prepareProviders($providers)
     {
-        return collect($providers)->map(function ($provider) {
-            return (object) $provider;
-        });
+        return collect($providers)->map(fn ($provider) => (object) $provider);
     }
 
     /**
@@ -91,7 +87,6 @@ class Butler
     /**
      * Return a single provider's details.
      *
-     * @param  $provider
      * @return stdClass
      */
     public function provider($provider)
@@ -118,7 +113,7 @@ class Butler
      */
     public function routes()
     {
-        include __DIR__ . '/../routes/web.php';
+        include __DIR__.'/../routes/web.php';
     }
 
     /**
@@ -126,14 +121,13 @@ class Butler
      * by the Butler key. It means we can configure it
      * to fit in with the application more easily.
      *
-     * @param  $key
      * @return mixed
      */
     public function routeName($key)
     {
         // Allow temporary override of routes
-        if (session('butler.redirect.' . $key)) {
-            return session('butler.redirect.' . $key);
+        if (session('butler.redirect.'.$key)) {
+            return session('butler.redirect.'.$key);
         }
 
         return $this->routeNames[$key];
@@ -142,7 +136,6 @@ class Butler
     /**
      * Handle forced redirection to full urls, or routes with parameters, as well as plain routes names.
      *
-     * @param  $key
      * @return \Illuminate\Http\RedirectResponse
      */
     public function redirectResponseTo($key)
@@ -153,7 +146,7 @@ class Butler
             return redirect()->route(...$redirectTo);
         }
 
-        if (strpos($redirectTo, '/') === 0 || strpos($redirectTo, 'https://') === 0 || strpos($redirectTo, 'http://') === 0) {
+        if (str_starts_with((string) $redirectTo, '/') || str_starts_with((string) $redirectTo, 'https://') || str_starts_with((string) $redirectTo, 'http://')) {
             return redirect()->to($redirectTo);
         }
 
@@ -165,7 +158,6 @@ class Butler
      * appropriate. We also check whether the provider is set up for use.
      *
      * @param  string  $provider  The provider name
-     * @param  \Laravel\Socialite\Contracts\User  $identity
      * @return bool
      *
      * @throws UnknownProvider
@@ -206,7 +198,6 @@ class Butler
      * create one if allowed. Otherwise, we will fail through a graceful Exception :).
      *
      * @param  string  $provider  The provider name
-     * @param  \Laravel\Socialite\Contracts\User  $identity
      * @return SocialIdentity
      *
      * @throws NoUser
@@ -253,7 +244,7 @@ class Butler
 
         // if the authenticated user matches the one found with the
         if ($authenticatedUser->getKey() === $existingSocialIdentity->user->getKey()) {
-            throw new UserAlreadyHasSocialIdentity();
+            throw new UserAlreadyHasSocialIdentity;
         }
 
         // if the authenticated user doesn't match the one that is found to match the identity details, fail
@@ -265,7 +256,6 @@ class Butler
     /**
      * Confirm a SocialIdentity by providing the token.
      *
-     * @param  $token
      * @return SocialIdentity
      *
      * @throws Exceptions\UnableToConfirm
@@ -288,7 +278,6 @@ class Butler
     /**
      * Check if butler created the user.
      *
-     * @param  $user
      * @return mixed
      */
     public function createdUser($user)

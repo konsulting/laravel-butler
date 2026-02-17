@@ -87,18 +87,12 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
         Route::group([
             'middleware' => 'web',
-        ], function ($router) {
-            Route::get('/login', function () {
-                return 'Login ' . session('status.content');
-            })->name('login');
+        ], function ($router): void {
+            Route::get('/login', fn () => 'Login '.session('status.content'))->name('login');
 
-            Route::get('/home', function () {
-                return 'Home ' . session('status.content');
-            })->name('home');
+            Route::get('/home', fn () => 'Home '.session('status.content'))->name('home');
 
-            Route::get('/profile', function () {
-                return 'Profile ' . session('status.content');
-            })->name('profile');
+            Route::get('/profile', fn () => 'Profile '.session('status.content'))->name('profile');
         });
 
         Butler::routes();
@@ -107,7 +101,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     /**
      * Setup the test environment.
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
 
@@ -115,13 +109,13 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
 
         $this->loadMigrationsFrom([
             '--database' => 'testbench',
-            '--path' => realpath(__DIR__ . '/../migrations'),
+            '--path' => realpath(__DIR__.'/../migrations'),
         ]);
     }
 
     public function createUsersTable()
     {
-        Schema::create('users', function ($table) {
+        Schema::create('users', function ($table): void {
             $table->increments('id');
             $table->string('name')->nullable();
             $table->string('email')->nullable();
