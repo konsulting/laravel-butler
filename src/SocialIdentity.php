@@ -59,11 +59,11 @@ class SocialIdentity extends Model
         }
 
         return static::create([
-            'provider'      => $provider,
-            'user_id'       => $user->id,
-            'reference'     => $identity->getId(),
-            'access_token'  => $identity->token,
-            'expires_at'    => Carbon::now()->addSeconds($identity->expiresIn),
+            'provider' => $provider,
+            'user_id' => $user->id,
+            'reference' => $identity->getId(),
+            'access_token' => $identity->token,
+            'expires_at' => Carbon::now()->addSeconds($identity->expiresIn),
             'refresh_token' => $identity->refreshToken,
             'confirm_token' => Str::random(60),
             'confirm_until' => Carbon::now()->addMinutes(30),
@@ -84,7 +84,7 @@ class SocialIdentity extends Model
     /**
      * Confirm a SocialIdentity after locating it by its token.
      *
-     * @param $token
+     * @param  $token
      * @return static
      *
      * @throws \Konsulting\Butler\Exceptions\UnableToConfirm
@@ -135,8 +135,8 @@ class SocialIdentity extends Model
     public function updateFromOauthIdentity(Identity $identity)
     {
         $this->update([
-            'access_token'  => $identity->token,
-            'expires_at'    => Carbon::now()->addSeconds($identity->expiresIn),
+            'access_token' => $identity->token,
+            'expires_at' => Carbon::now()->addSeconds($identity->expiresIn),
             'refresh_token' => $identity->refreshToken,
         ]);
     }

@@ -13,7 +13,7 @@ class EloquentUserProvider
     /**
      * EloquentUserProvider constructor.
      *
-     * @param $model
+     * @param  $model
      */
     public function __construct($model)
     {
@@ -72,7 +72,7 @@ class EloquentUserProvider
     /**
      * Confirm or deny whether we created a user.
      *
-     * @param $user
+     * @param  $user
      * @return bool
      */
     public function createdUser($user)
