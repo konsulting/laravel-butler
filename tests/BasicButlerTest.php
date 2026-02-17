@@ -56,7 +56,7 @@ class BasicButlerTest extends TestCase
 
         Butler::register('test', $identity);
 
-        $this->seeInDatabase('users', ['email' => 'keoghan@klever.co.uk']);
+        $this->assertDatabaseHas('users', ['email' => 'keoghan@klever.co.uk']);
     }
 
     public function test_it_will_NOT_create_a_user_if_not_allowed()
@@ -68,7 +68,7 @@ class BasicButlerTest extends TestCase
         $this->expectException(NoUser::class);
         Butler::register('test', $identity);
 
-        $this->dontSeeInDatabase('users', ['email' => 'keoghan@klever.co.uk']);
+        $this->assertDatabaseMissing('users', ['email' => 'keoghan@klever.co.uk']);
     }
 
     public function test_it_can_confirm_a_social_identity_by_token()
@@ -95,7 +95,7 @@ class BasicButlerTest extends TestCase
 
         Butler::register('test', $identity);
 
-        $this->dontSeeInDatabase('social_identities', ['user_id' => 2]);
+        $this->assertDatabaseMissing('social_identities', ['user_id' => 2]);
     }
 
     public function test_it_will_not_authenticate_a_new_user_if_another_is_logged_in()

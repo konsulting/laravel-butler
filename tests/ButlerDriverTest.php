@@ -12,6 +12,8 @@ use Laravel\Socialite\Contracts\User as SocialiteUser;
 use Laravel\Socialite\SocialiteManager;
 use Mockery;
 use Mockery\Mock;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Test;
 
 class ButlerDriverTest extends DatabaseTestCase
 {
@@ -36,7 +38,7 @@ class ButlerDriverTest extends DatabaseTestCase
         ], []);
     }
 
-    /** @test */
+    #[Test]
     public function it_performs_a_redirect_on_the_socialite_driver()
     {
         $this->socialiteShouldReturnMockedProvider();
@@ -48,7 +50,7 @@ class ButlerDriverTest extends DatabaseTestCase
         $this->assertSame($redirect, $this->butler->driver('my-service')->redirect());
     }
 
-    /** @test */
+    #[Test]
     public function it_gets_the_user()
     {
         $this->socialiteShouldReturnMockedProvider();
@@ -60,7 +62,7 @@ class ButlerDriverTest extends DatabaseTestCase
         $this->assertSame($user, $this->butler->driver('my-service')->user());
     }
 
-    /** @test */
+    #[Test]
     public function it_cannot_refresh_a_non_refreshable_provider()
     {
         $this->socialiteShouldReturnMockedProvider();
@@ -70,13 +72,13 @@ class ButlerDriverTest extends DatabaseTestCase
         $this->butler->driver('my-service')->refresh(Mockery::mock(SocialIdentity::class));
     }
 
-    /** @test */
+    #[Test]
     public function it_refreshes_a_token()
     {
         $this->socialiteProvider = Mockery::mock(Provider::class, RefreshableProvider::class);
         $this->socialiteShouldReturnMockedProvider();
 
-        $socialIdentity = factory(SocialIdentity::class)->create();
+        $socialIdentity = SocialIdentity::factory()->create();
         $this->socialiteProvider->shouldReceive('getRefreshResponse')->with($socialIdentity->refresh_token)
             ->once()->andReturn([
                 'access_token' => 'new access token',
@@ -93,13 +95,13 @@ class ButlerDriverTest extends DatabaseTestCase
         $this->assertSame(Carbon::now()->addSeconds(3600)->toAtomString(), $socialIdentity->expires_at->toAtomString());
     }
 
-    /** @test */
+    #[Test]
     public function it_refreshes_a_token_and_does_not_receive_an_expiry_time_or_refresh_token()
     {
         $this->socialiteProvider = Mockery::mock(Provider::class, RefreshableProvider::class);
         $this->socialiteShouldReturnMockedProvider();
 
-        $socialIdentity = factory(SocialIdentity::class)->create([
+        $socialIdentity = SocialIdentity::factory()->create([
             'refresh_token' => 'my refresh token',
             'expires_at' => Carbon::now(),
         ]);
@@ -111,17 +113,14 @@ class ButlerDriverTest extends DatabaseTestCase
         $this->assertSame(null, $socialIdentity->refresh_token);
     }
 
-    /**
-     * @test
-     *
-     * @dataProvider badRefreshTokenResponseProvider
-     */
+    #[Test]
+    #[DataProvider('badRefreshTokenResponseProvider')]
     public function it_fails_a_refresh_if_the_response_is_not_valid($refreshResponse)
     {
         $this->socialiteProvider = Mockery::mock(Provider::class, RefreshableProvider::class);
         $this->socialiteShouldReturnMockedProvider();
 
-        $socialIdentity = factory(SocialIdentity::class)->create();
+        $socialIdentity = SocialIdentity::factory()->create();
         $this->socialiteProvider->shouldReceive('getRefreshResponse')->once()->andReturn($refreshResponse);
 
         $this->expectException(CouldNotRefreshToken::class);
@@ -129,7 +128,7 @@ class ButlerDriverTest extends DatabaseTestCase
         $this->butler->driver('my-service')->refresh($socialIdentity);
     }
 
-    public function badRefreshTokenResponseProvider()
+    public static function badRefreshTokenResponseProvider()
     {
         return [
             [['no access token' => 'a']],

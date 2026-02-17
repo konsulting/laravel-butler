@@ -9,11 +9,10 @@ use Konsulting\Butler\Fake\Identity;
 use Konsulting\Butler\Fake\Socialite;
 use Konsulting\Butler\Fake\User;
 use Laravel\Socialite\Contracts\Factory as SocialiteFactory;
-use Orchestra\Database\ConsoleServiceProvider;
 use Route;
 use Schema;
 
-abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
+abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
     const CARBON_NOW = '2018-01-01 10:30:40';
 
@@ -38,9 +37,7 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
      */
     protected function getPackageProviders($app)
     {
-        $over53 = substr(app()->version(), 0, 3) > 5.3 ? [ConsoleServiceProvider::class] : [];
-
-        return array_merge([ButlerServiceProvider::class], $over53);
+        return [ButlerServiceProvider::class];
     }
 
     /**
@@ -120,8 +117,6 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
             '--database' => 'testbench',
             '--path' => realpath(__DIR__ . '/../migrations'),
         ]);
-
-        $this->withFactories(__DIR__ . '/factories');
     }
 
     public function createUsersTable()

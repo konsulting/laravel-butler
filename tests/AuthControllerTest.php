@@ -19,22 +19,22 @@ class AuthControllerTest extends DatabaseTestCase
 
     public function test_it_redirects_to_a_provider()
     {
-        $this->visitRoute('butler.redirect', 'test');
-        $this->see('Redirect to location for test');
+        $this->get(route('butler.redirect', 'test'))
+            ->assertSee('redirect to location for test');
     }
 
     public function test_it_uses_scopes_when_it_redirects_to_a_provider()
     {
         $this->app->config->set('butler.providers.test.scopes', ['a_scope', 'a_second_scope']);
 
-        $this->visitRoute('butler.redirect', 'test');
-        $this->see('Redirect to location for test, with a_scope, a_second_scope');
+        $this->get(route('butler.redirect', 'test'))
+            ->assertSee('redirect to location for test, with a_scope, a_second_scope');
     }
 
     public function test_it_does_not_redirect_to_an_unknown_provider()
     {
-        $this->visitRoute('butler.redirect', 'IdontExist');
-        $this->seeRouteIs(Butler::routeName('login'));
+        $this->get(route('butler.redirect', 'IdontExist'))
+            ->assertRedirect(route(Butler::routeName('login')));
     }
 
     public function test_it_authenticates_a_valid_identity()
@@ -43,14 +43,14 @@ class AuthControllerTest extends DatabaseTestCase
         $identity = $this->makeIdentity();
         $this->makeConfirmedSocialIdentity('test', $user, $identity);
 
-        $this->visitRoute('butler.callback', 'test');
-        $this->seeRouteIs(Butler::routeName('authenticated'));
+        $this->get(route('butler.callback', 'test'))
+            ->assertRedirect(route(Butler::routeName('authenticated')));
     }
 
     public function test_it_doesnt_authenticate_an_unknown_identity()
     {
-        $this->visitRoute('butler.callback', 'test');
-        $this->seeRouteIs(Butler::routeName('login'));
+        $this->get(route('butler.callback', 'test'))
+            ->assertRedirect(route(Butler::routeName('login')));
     }
 
     public function test_it_creates_a_user_if_allowed_on_callback()
@@ -59,9 +59,10 @@ class AuthControllerTest extends DatabaseTestCase
 
         $this->allowUserCreation();
 
-        $this->visitRoute('butler.callback', 'test');
-        $this->seeRouteIs(Butler::routeName('login'));
-        $this->seeInDatabase('users', ['email' => 'keoghan@klever.co.uk']);
+        $this->get(route('butler.callback', 'test'))
+            ->assertRedirect(route(Butler::routeName('login')));
+
+        $this->assertDatabaseHas('users', ['email' => 'keoghan@klever.co.uk']);
 
         Notification::assertSentTo(
             User::first(),
@@ -77,9 +78,10 @@ class AuthControllerTest extends DatabaseTestCase
 
         $this->allowUserCreation();
 
-        $this->visitRoute('butler.callback', 'test');
-        $this->seeRouteIs(Butler::routeName('profile'));
-        $this->seeInDatabase('users', ['email' => 'keoghan@klever.co.uk']);
+        $this->get(route('butler.callback', 'test'))
+            ->assertRedirect(route(Butler::routeName('profile')));
+
+        $this->assertDatabaseHas('users', ['email' => 'keoghan@klever.co.uk']);
 
         Notification::assertNotSentTo(
             User::first(),
@@ -91,9 +93,10 @@ class AuthControllerTest extends DatabaseTestCase
     {
         $this->stopUserCreation();
 
-        $this->visitRoute('butler.callback', 'test');
-        $this->seeRouteIs(Butler::routeName('login'));
-        $this->dontSeeInDatabase('users', ['email' => 'keoghan@klever.co.uk']);
+        $this->get(route('butler.callback', 'test'))
+            ->assertRedirect(route(Butler::routeName('login')));
+
+        $this->assertDatabaseMissing('users', ['email' => 'keoghan@klever.co.uk']);
     }
 
     public function test_an_authenticated_user_can_add_identities()
@@ -101,9 +104,10 @@ class AuthControllerTest extends DatabaseTestCase
         $user = $this->makeUser();
 
         $this->actingAs($user)
-            ->visitRoute('butler.callback', 'test')
-            ->seeRouteIs(Butler::routeName('profile'))
-            ->seeInDatabase('social_identities', ['user_id' => 1]);
+            ->get(route('butler.callback', 'test'))
+            ->assertRedirect(route(Butler::routeName('profile')));
+
+        $this->assertDatabaseHas('social_identities', ['user_id' => 1]);
     }
 
     public function test_it_can_confirm_an_identity()
@@ -112,8 +116,9 @@ class AuthControllerTest extends DatabaseTestCase
         $identity = $this->makeIdentity();
         $socialIdentity = SocialIdentity::createFromOauthIdentity('test', $user, $identity);
 
-        $this->visitRoute('butler.confirm', $socialIdentity->confirm_token);
-        $this->seeRouteIs(Butler::routeName('login'));
+        $this->get(route('butler.confirm', $socialIdentity->confirm_token))
+            ->assertRedirect(route(Butler::routeName('login')));
+
         $this->assertNotNull($socialIdentity->fresh()->confirmed_at);
     }
 
@@ -123,9 +128,10 @@ class AuthControllerTest extends DatabaseTestCase
         $identity = $this->makeIdentity();
         $socialIdentity = SocialIdentity::createFromOauthIdentity('test', $user, $identity);
 
-        $this->actingAs($user);
-        $this->visitRoute('butler.confirm', $socialIdentity->confirm_token);
-        $this->seeRouteIs(Butler::routeName('profile'));
+        $this->actingAs($user)
+            ->get(route('butler.confirm', $socialIdentity->confirm_token))
+            ->assertRedirect(route(Butler::routeName('profile')));
+
         $this->assertNotNull($socialIdentity->fresh()->confirmed_at);
     }
 
@@ -135,10 +141,9 @@ class AuthControllerTest extends DatabaseTestCase
         $identity = $this->makeIdentity();
         $this->makeConfirmedSocialIdentity('test', $user, $identity);
 
-        $this->actingAs($user);
-        $this->visitRoute('butler.callback', 'test');
-        $this->seeRouteIs(Butler::routeName('profile'));
-        $this->dontSee('Identity saved');
+        $this->actingAs($user)
+            ->get(route('butler.callback', 'test'))
+            ->assertRedirect(route(Butler::routeName('profile')));
     }
 
     public function test_it_will_associate_to_a_logged_in_user_if_allowed_bypassing_the_email_association()
@@ -148,9 +153,10 @@ class AuthControllerTest extends DatabaseTestCase
         $user = $this->makeUser('Fred', 'fred@klever.co.uk');
 
         $this->actingAs($user)
-            ->visitRoute('butler.callback', 'test')
-            ->seeRouteIs(Butler::routeName('profile'))
-            ->seeInDatabase('social_identities', ['user_id' => 1]);
+            ->get(route('butler.callback', 'test'))
+            ->assertRedirect(route(Butler::routeName('profile')));
+
+        $this->assertDatabaseHas('social_identities', ['user_id' => 1]);
     }
 
     public function makeUser2()

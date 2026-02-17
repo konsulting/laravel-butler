@@ -13,6 +13,7 @@ use Laravel\Socialite\Contracts\Provider as SocialiteProvider;
 use Laravel\Socialite\SocialiteServiceProvider;
 use Mockery;
 use Mockery\Mock;
+use PHPUnit\Framework\Attributes\Test;
 
 class ButlerJobTest extends DatabaseTestCase
 {
@@ -55,7 +56,7 @@ class ButlerJobTest extends DatabaseTestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_executes_a_job_with_a_valid_access_token()
     {
         $task = Mockery::mock();
@@ -64,7 +65,7 @@ class ButlerJobTest extends DatabaseTestCase
         MyButlerJob::dispatch($this->user, $task);
     }
 
-    /** @test */
+    #[Test]
     public function it_refreshes_an_expired_token_before_running_the_task_and_invalidates_the_token()
     {
         $this->socialIdentity->update(['expires_at' => Carbon::now()->subDay()]);
@@ -87,7 +88,7 @@ class ButlerJobTest extends DatabaseTestCase
         $this->assertNull($this->socialIdentity->expires_at);
     }
 
-    /** @test */
+    #[Test]
     public function it_throws_an_exception_if_the_social_identity_is_not_found()
     {
         $this->socialIdentity->delete();
@@ -96,7 +97,7 @@ class ButlerJobTest extends DatabaseTestCase
         MyButlerJob::dispatch($this->user, Mockery::mock());
     }
 
-    /** @test */
+    #[Test]
     public function it_handles_thrown_exceptions()
     {
         $exception = new TestException;

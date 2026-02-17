@@ -3,6 +3,7 @@
 namespace Konsulting\Butler;
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Konsulting\Butler\Exceptions\UnableToConfirm;
@@ -10,9 +11,20 @@ use Laravel\Socialite\Contracts\User as Identity;
 
 class SocialIdentity extends Model
 {
+    use HasFactory;
+
     protected $guarded = ['id'];
 
-    protected $dates = ['expires_at', 'confirmed_at', 'confirm_until'];
+    protected static function newFactory()
+    {
+        return \Konsulting\Butler\Database\Factories\SocialIdentityFactory::new();
+    }
+
+    protected $casts = [
+        'expires_at' => 'datetime',
+        'confirmed_at' => 'datetime',
+        'confirm_until' => 'datetime',
+    ];
 
     protected $visible = ['id', 'user_id', 'provider', 'confirmed_at'];
 
