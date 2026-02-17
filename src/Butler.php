@@ -52,7 +52,7 @@ class Butler
     /**
      * Prepare the incoming providers array into a collection of simple objects.
      *
-     * @param $providers
+     * @param  $providers
      * @return \Illuminate\Support\Collection
      */
     protected function prepareProviders($providers)
@@ -91,7 +91,7 @@ class Butler
     /**
      * Return a single provider's details.
      *
-     * @param $provider
+     * @param  $provider
      * @return stdClass
      */
     public function provider($provider)
@@ -126,7 +126,7 @@ class Butler
      * by the Butler key. It means we can configure it
      * to fit in with the application more easily.
      *
-     * @param $key
+     * @param  $key
      * @return mixed
      */
     public function routeName($key)
@@ -142,7 +142,7 @@ class Butler
     /**
      * Handle forced redirection to full urls, or routes with parameters, as well as plain routes names.
      *
-     * @param $key
+     * @param  $key
      * @return \Illuminate\Http\RedirectResponse
      */
     public function redirectResponseTo($key)
@@ -265,7 +265,7 @@ class Butler
     /**
      * Confirm a SocialIdentity by providing the token.
      *
-     * @param $token
+     * @param  $token
      * @return SocialIdentity
      *
      * @throws Exceptions\UnableToConfirm
@@ -288,7 +288,7 @@ class Butler
     /**
      * Check if butler created the user.
      *
-     * @param $user
+     * @param  $user
      * @return mixed
      */
     public function createdUser($user)

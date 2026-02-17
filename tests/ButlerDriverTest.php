@@ -79,9 +79,9 @@ class ButlerDriverTest extends DatabaseTestCase
         $socialIdentity = factory(SocialIdentity::class)->create();
         $this->socialiteProvider->shouldReceive('getRefreshResponse')->with($socialIdentity->refresh_token)
             ->once()->andReturn([
-                'access_token'  => 'new access token',
-                'expires_in'    => 3600,
-                'token_type'    => 'Bearer',
+                'access_token' => 'new access token',
+                'expires_in' => 3600,
+                'token_type' => 'Bearer',
                 'refresh_token' => 'new refresh token',
             ]);
 
@@ -101,7 +101,7 @@ class ButlerDriverTest extends DatabaseTestCase
 
         $socialIdentity = factory(SocialIdentity::class)->create([
             'refresh_token' => 'my refresh token',
-            'expires_at'    => Carbon::now(),
+            'expires_at' => Carbon::now(),
         ]);
         $this->socialiteProvider->shouldReceive('getRefreshResponse')->once()->andReturn(['access_token' => 'a']);
 
@@ -113,6 +113,7 @@ class ButlerDriverTest extends DatabaseTestCase
 
     /**
      * @test
+     *
      * @dataProvider badRefreshTokenResponseProvider
      */
     public function it_fails_a_refresh_if_the_response_is_not_valid($refreshResponse)

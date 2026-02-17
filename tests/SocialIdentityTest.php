@@ -18,6 +18,7 @@ class SocialIdentityTest extends DatabaseTestCase
 
     /**
      * @test
+     *
      * @dataProvider accessTokenExpiryProvider
      */
     public function it_checks_if_the_access_token_has_expired($expiresAt, $isExpired)

@@ -67,9 +67,9 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
-            'driver'   => 'sqlite',
+            'driver' => 'sqlite',
             'database' => ':memory:',
-            'prefix'   => '',
+            'prefix' => '',
         ]);
 
         $app['config']->set('mail.driver', 'log');
@@ -118,7 +118,7 @@ abstract class TestCase extends \Orchestra\Testbench\BrowserKit\TestCase
 
         $this->loadMigrationsFrom([
             '--database' => 'testbench',
-            '--path'     => realpath(__DIR__ . '/../migrations'),
+            '--path' => realpath(__DIR__ . '/../migrations'),
         ]);
 
         $this->withFactories(__DIR__ . '/factories');

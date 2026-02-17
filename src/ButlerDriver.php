@@ -84,8 +84,8 @@ class ButlerDriver implements Provider
     /**
      * Proxy calls to the Socialite Provider, if we can.
      *
-     * @param $method
-     * @param $parameters
+     * @param  $method
+     * @param  $parameters
      * @return mixed
      */
     public function __call($method, $parameters)
@@ -120,9 +120,9 @@ class ButlerDriver implements Provider
         $this->validateRefreshResponse($response);
 
         $socialIdentity->update([
-            'access_token'  => $response['access_token'],
+            'access_token' => $response['access_token'],
             'refresh_token' => Arr::get($response, 'refresh_token'),
-            'expires_at'    => array_key_exists('expires_in', $response)
+            'expires_at' => array_key_exists('expires_in', $response)
                 ? Carbon::now()->addSeconds($response['expires_in'])
                 : null,
         ]);

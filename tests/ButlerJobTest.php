@@ -47,11 +47,11 @@ class ButlerJobTest extends DatabaseTestCase
         $this->user->shouldReceive('getAuthIdentifier')->andReturn(1);
 
         $this->socialIdentity = SocialIdentity::create([
-            'access_token'  => 'the access token',
-            'expires_at'    => Carbon::now()->addDay(),
+            'access_token' => 'the access token',
+            'expires_at' => Carbon::now()->addDay(),
             'refresh_token' => 'the refresh token',
-            'user_id'       => $this->user->getAuthIdentifier(),
-            'provider'      => 'my-service',
+            'user_id' => $this->user->getAuthIdentifier(),
+            'provider' => 'my-service',
         ]);
     }
 
@@ -73,7 +73,7 @@ class ButlerJobTest extends DatabaseTestCase
         // Refresh before loop
         $this->socialiteProvider->shouldReceive('getRefreshResponse')->with('the refresh token')
             ->andReturn([
-                'access_token'  => 'new token 1',
+                'access_token' => 'new token 1',
                 'refresh_token' => 'new refresh 1',
             ])->once()->ordered();
 
