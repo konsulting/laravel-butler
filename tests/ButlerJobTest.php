@@ -40,7 +40,8 @@ class ButlerJobTest extends DatabaseTestCase
         $socialite = app(Factory::class);
         $this->socialiteProvider = Mockery::mock(SocialiteProvider::class, RefreshableProvider::class);
 
-        $socialite->extend('my-service', fn () => $this->socialiteProvider);
+        $socialiteProvider = $this->socialiteProvider;
+        $socialite->extend('my-service', fn () => $socialiteProvider);
 
         $this->user = Mockery::mock(Authenticatable::class);
         $this->user->shouldReceive('getAuthIdentifier')->andReturn(1);
